@@ -77,6 +77,7 @@
                             <Image
                                 Height="16"
                                 RenderOptions.BitmapScalingMode="HighQuality"
+                                SnapsToDevicePixels="True"
                                 Source="{Binding Instance.ImageTranslateService.MetaData.IconPath}" />
                             <TextBlock
                                 Grid.Column="1"
@@ -170,6 +171,7 @@
                             <Image
                                 Height="16"
                                 RenderOptions.BitmapScalingMode="HighQuality"
+                                SnapsToDevicePixels="True"
                                 Source="{Binding Instance.ReplaceService.MetaData.IconPath}" />
                             <TextBlock
                                 Grid.Column="1"

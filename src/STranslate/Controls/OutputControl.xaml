@@ -101,6 +101,8 @@
                         <Image
                             Width="18"
                             Height="18"
+                            RenderOptions.BitmapScalingMode="HighQuality"
+                            SnapsToDevicePixels="True"
                             Source="{Binding MetaData.IconPath}" />
                         <TextBlock
                             VerticalAlignment="Center"
@@ -410,6 +412,8 @@
                         <Image
                             Width="18"
                             Height="18"
+                            RenderOptions.BitmapScalingMode="HighQuality"
+                            SnapsToDevicePixels="True"
                             Source="{Binding MetaData.IconPath}" />
                         <TextBlock
                             VerticalAlignment="Center"

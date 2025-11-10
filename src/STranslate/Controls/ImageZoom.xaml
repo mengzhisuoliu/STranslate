@@ -35,6 +35,8 @@
                                 <Grid Width="{Binding Path=Source.PixelWidth, ElementName=PART_Image}" Height="{Binding Path=Source.PixelHeight, ElementName=PART_Image}">
                                     <Image
                                         x:Name="PART_Image"
+                                        RenderOptions.BitmapScalingMode="HighQuality"
+                                        SnapsToDevicePixels="True"
                                         Source="{TemplateBinding Source}"
                                         Stretch="Fill" />
 

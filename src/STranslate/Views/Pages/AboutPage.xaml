@@ -90,6 +90,7 @@
                             Width="20"
                             Height="20"
                             RenderOptions.BitmapScalingMode="HighQuality"
+                            SnapsToDevicePixels="True"
                             Source="/Resources/app.ico" />
                     </ui:SettingsExpander.HeaderIcon>
                     <TextBox

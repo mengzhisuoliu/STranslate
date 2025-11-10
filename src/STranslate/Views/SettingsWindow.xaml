@@ -48,6 +48,7 @@
                 <Image
                     Width="20"
                     RenderOptions.BitmapScalingMode="HighQuality"
+                    SnapsToDevicePixels="True"
                     Source="pack://application:,,,/Resources/app.ico" />
                 <TextBlock
                     VerticalAlignment="Center"
@@ -90,6 +91,7 @@
                         Width="50"
                         Height="50"
                         RenderOptions.BitmapScalingMode="HighQuality"
+                        SnapsToDevicePixels="True"
                         Source="/Resources/app.ico" />
                     <TextBlock
                         Grid.Row="1"
