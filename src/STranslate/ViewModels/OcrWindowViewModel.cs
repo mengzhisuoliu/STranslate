@@ -23,6 +23,7 @@ namespace STranslate.ViewModels;
 public partial class OcrWindowViewModel : ObservableObject, IDisposable
 {
     #region Constructor & DI
+    public HotkeySettings HotkeySettings { get; }
 
     public OcrWindowViewModel(
         Settings settings,
@@ -31,7 +32,8 @@ public partial class OcrWindowViewModel : ObservableObject, IDisposable
         OcrInstance ocrInstance,
         TtsInstance ttsInstance,
         Internationalization i18n,
-        ISnackbar snackbar)
+        ISnackbar snackbar,
+        HotkeySettings hotkeySettings)
     {
         Settings = settings;
         DataProvider = dataProvider;
@@ -54,6 +56,7 @@ public partial class OcrWindowViewModel : ObservableObject, IDisposable
         }
 
         Settings.PropertyChanged += OnSettingsPropertyChanged;
+        HotkeySettings = hotkeySettings;
     }
 
     #endregion

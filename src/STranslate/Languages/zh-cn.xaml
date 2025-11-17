@@ -105,6 +105,8 @@
     <sys:String x:Key="Hotkey_OpenSettings">打开设置</sys:String>
     <sys:String x:Key="Hotkey_OpenSettingsDescription">主窗口打开时，按下快捷键打开设置窗口。</sys:String>
     <sys:String x:Key="Hotkey_SaveToVocabulary">保存到生词本</sys:String>
+    <sys:String x:Key="Hotkey_OcrWindow">OCR窗口快捷键</sys:String>
+    <sys:String x:Key="Hotkey_ReExecuteOcr">重新执行文本识别</sys:String>
 
     <!--  // Translation Page //  -->
     <sys:String x:Key="ReplaceService">替换翻译</sys:String>

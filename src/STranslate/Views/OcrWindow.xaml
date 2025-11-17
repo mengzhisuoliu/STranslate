@@ -35,9 +35,9 @@
             Command="{Binding CancelCommand}"
             CommandParameter="{Binding ElementName=STOcrWindow}" />
         <KeyBinding
-            Key="R"
+            Key="{Binding HotkeySettings.ReExecuteOcrHotkey.Key, Converter={cnvt:StringToKeyBindingConverter}, ConverterParameter={x:Static cnvt:HotkeyMode.Key}}"
             Command="{Binding ReExecuteCommand}"
-            Modifiers="Ctrl" />
+            Modifiers="{Binding HotkeySettings.ReExecuteOcrHotkey.Key, Converter={cnvt:StringToKeyBindingConverter}, ConverterParameter={x:Static cnvt:HotkeyMode.Modifiers}}" />
     </Window.InputBindings>
     <Grid>
         <Border

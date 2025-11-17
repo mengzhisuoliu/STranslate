@@ -105,6 +105,8 @@
     <sys:String x:Key="Hotkey_OpenSettings">Open Settings</sys:String>
     <sys:String x:Key="Hotkey_OpenSettingsDescription">Open settings window when main window is open.</sys:String>
     <sys:String x:Key="Hotkey_SaveToVocabulary">Save To Vocabulary</sys:String>
+    <sys:String x:Key="Hotkey_OcrWindow">OCR Window Hotkey</sys:String>
+    <sys:String x:Key="Hotkey_ReExecuteOcr">Re-execute text recognition</sys:String>
 
     <!--  // Translation Page //  -->
     <sys:String x:Key="ReplaceService">Replace Trans</sys:String>

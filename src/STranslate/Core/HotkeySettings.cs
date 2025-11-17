@@ -27,7 +27,7 @@ public partial class HotkeySettings : ObservableObject
     public GlobalHotkey SilentTtsHotkey { get; set; } = new(Constant.EmptyHotkey);
     public GlobalHotkey OcrHotkey { get; set; } = new("Alt + Shift + S");
 
-    #region Software Hotkeys
+    #region Software Hotkeys - MainWindow
 
     public Hotkey OpenSettingsHotkey { get; set; } = new("Ctrl + OemComma");
 
@@ -38,6 +38,12 @@ public partial class HotkeySettings : ObservableObject
     public Hotkey ToggleTopmostHotkey { get; set; } = new("Ctrl + Shift + T");
 
     public Hotkey SaveToVocabularyHotkey { get; set; } = new("Ctrl + Shift + S");
+
+    #endregion
+
+    #region Software Hotkeys - OcrWindow
+
+    public Hotkey ReExecuteOcrHotkey { get; set; } = new("Ctrl + R");
 
     #endregion
 
@@ -61,6 +67,9 @@ public partial class HotkeySettings : ObservableObject
         new RegisteredHotkeyData(ToggleColorThemeHotkey.Key, "Hotkey_ToggleColorTheme", HotkeyType.MainWindow, () => ToggleColorThemeHotkey.Key = Constant.EmptyHotkey),
         new RegisteredHotkeyData(ToggleTopmostHotkey.Key, "Hotkey_ToggleTopmost", HotkeyType.MainWindow, () => ToggleTopmostHotkey.Key = Constant.EmptyHotkey),
         new RegisteredHotkeyData(SaveToVocabularyHotkey.Key, "Hotkey_SaveToVocabulary", HotkeyType.MainWindow, () => SaveToVocabularyHotkey.Key = Constant.EmptyHotkey),
+
+        // OcrWindow
+        new RegisteredHotkeyData(ReExecuteOcrHotkey.Key, "Hotkey_ReExecuteOcr", HotkeyType.OcrWindow, () => ReExecuteOcrHotkey.Key = Constant.EmptyHotkey),
 
         //TODO: Other Window
     ];
@@ -142,11 +151,13 @@ public partial class HotkeySettings : ObservableObject
             [nameof(SilentOcrHotkey)] = "Alt + Shift + F",
             [nameof(SilentTtsHotkey)] = "Alt + Shift + G",
             [nameof(OcrHotkey)] = "Alt + Shift + S",
-            // Software Hotkeys
+            // Software Hotkeys - MainWindow
             [nameof(OpenSettingsHotkey)] = "Ctrl + OemComma",
             [nameof(HideInputHotkey)] = "Ctrl + Shift + A",
             [nameof(ToggleColorThemeHotkey)] = "Ctrl + Shift + R",
             [nameof(ToggleTopmostHotkey)] = "Ctrl + Shift + T",
+            // Software Hotkeys - OcrWindow
+            [nameof(ReExecuteOcrHotkey)] = "Ctrl + R",
         };
         foreach (var prop in GetType().GetProperties())
         {

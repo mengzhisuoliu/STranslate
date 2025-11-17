@@ -235,6 +235,19 @@
                         </ui:SettingsCard>
                     </ui:SettingsExpander.Items>
                 </ui:SettingsExpander>
+
+                <ui:SettingsExpander Header="{DynamicResource Hotkey_OcrWindow}">
+                    <ui:SettingsExpander.Items>
+                        <ui:SettingsCard Header="{DynamicResource Hotkey_ReExecuteOcr}">
+                            <control:HotkeyControl
+                                DefaultHotkey="{Binding HotkeySettings.ReExecuteOcrHotkey.Default}"
+                                Hotkey="{Binding HotkeySettings.ReExecuteOcrHotkey.Key}"
+                                Type="OcrWindow"
+                                ValidateKeyGesture="False"
+                                WindowTitle="{DynamicResource Hotkey_ReExecuteOcr}" />
+                        </ui:SettingsCard>
+                    </ui:SettingsExpander.Items>
+                </ui:SettingsExpander>
             </ikw:SimpleStackPanel>
         </ui:ScrollViewerEx>
     </Grid>
