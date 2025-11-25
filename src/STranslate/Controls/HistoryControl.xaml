@@ -181,18 +181,37 @@
                                 </Border>
                             </Grid>
 
-                            <StackPanel Margin="10" Orientation="Horizontal">
-                                <Border BorderBrush="{x:Null}" CornerRadius="5">
-                                    <TextBlock Margin="5" Text="{Binding SourceLang}" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.Resources>
+                                    <Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                        <Setter Property="Margin" Value="0,5" />
+                                    </Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="6" />
+                                        <Setter Property="Background" Value="{DynamicResource {x:Static ui:ThemeKeys.CardBackgroundFillColorDefaultBrushKey}}" />
+                                    </Style>
+                                </Grid.Resources>
+                                <Border>
+                                    <TextBlock Text="{Binding SourceLang, Converter={cnvt:LangEnumToStringConverter}}" />
                                 </Border>
                                 <TextBlock
-                                    Margin="10,0"
-                                    VerticalAlignment="Center"
-                                    Text="&gt;&gt;" />
-                                <Border BorderBrush="{x:Null}" CornerRadius="5">
-                                    <TextBlock Margin="5" Text="{Binding TargetLang}" />
+                                    Grid.Column="1"
+                                    Margin="5,0"
+                                    FontFamily="{DynamicResource {x:Static ui:ThemeKeys.FluentSystemIconsKey}}"
+                                    FontSize="{DynamicResource STControlFontSize18}"
+                                    FontWeight="Medium"
+                                    Text="&#xE32B;" />
+                                <Border Grid.Column="2">
+                                    <TextBlock Text="{Binding TargetLang, Converter={cnvt:LangEnumToStringConverter}}" />
                                 </Border>
-                            </StackPanel>
+                            </Grid>
                             <ItemsControl
                                 Background="Transparent"
                                 ItemTemplateSelector="{StaticResource HistoryControlSelector}"
