@@ -363,7 +363,7 @@
                             </LinearGradientBrush>
                         </Setter.Value>
                     </Setter>
-                    <Setter TargetName="SvcCard" Property="BorderThickness" Value="2" />
+                    <!--<Setter TargetName="SvcCard" Property="BorderThickness" Value="2" />
                     <Setter TargetName="SvcCard" Property="Effect">
                         <Setter.Value>
                             <DropShadowEffect
@@ -375,7 +375,7 @@
                     </Setter>
                     <Setter TargetName="SvcCard" Property="TextOptions.TextFormattingMode" Value="Display" />
                     <Setter TargetName="SvcCard" Property="TextOptions.TextRenderingMode" Value="ClearType" />
-                    <Setter TargetName="SvcCard" Property="RenderOptions.ClearTypeHint" Value="Enabled" />
+                    <Setter TargetName="SvcCard" Property="RenderOptions.ClearTypeHint" Value="Enabled" />-->
                 </MultiDataTrigger.Setters>
             </MultiDataTrigger>
         </DataTemplate.Triggers>
