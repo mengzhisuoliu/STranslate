@@ -231,6 +231,13 @@ fn main() {
                         .value_parser(clap::value_parser!(u64)),
                 )
                 .arg(
+                    Arg::new("launch")
+                        .short('l')
+                        .long("launch")
+                        .value_name("PATH")
+                        .help("操作完成后启动的程序路径（可选）"),
+                )
+                .arg(
                     Arg::new("verbose")
                         .short('v')
                         .long("verbose")

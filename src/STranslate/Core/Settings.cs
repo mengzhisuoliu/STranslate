@@ -335,12 +335,10 @@ public partial class Settings : ObservableObject
         }
         else
         {
-#if !DEBUG
             if (UACHelper.Exist())
             {
                 UACHelper.Delete();
             } 
-#endif
         }
     }
 

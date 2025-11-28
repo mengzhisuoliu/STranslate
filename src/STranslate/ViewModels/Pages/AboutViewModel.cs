@@ -59,7 +59,7 @@ public partial class AboutViewModel(Settings settings, DataProvider dataProvider
             return;
 
         var filePath = saveFileDialog.FileName;
-        string[] args = ["backup", "-m", "backup", "-a", filePath, "-f", DataLocation.PluginsDirectory, "-f", DataLocation.SettingsDirectory, "-d", "3"];
+        string[] args = ["backup", "-m", "backup", "-a", filePath, "-f", DataLocation.PluginsDirectory, "-f", DataLocation.SettingsDirectory, "-d", "3", "-l", DataLocation.AppExePath];
         Utilities.ExecuteProgram(DataLocation.HostExePath, args);
         App.Current.Shutdown();
     }
@@ -75,7 +75,7 @@ public partial class AboutViewModel(Settings settings, DataProvider dataProvider
         if (openFileDialog.ShowDialog() != true)
             return;
         var filePath = openFileDialog.FileName;
-        string[] args = ["backup", "-m", "restore", "-a", filePath, "-s", Constant.Plugins, "-t", DataLocation.PluginsDirectory, "-s", Constant.Settings, "-t", DataLocation.SettingsDirectory, "-d", "3"];
+        string[] args = ["backup", "-m", "restore", "-a", filePath, "-s", Constant.Plugins, "-t", DataLocation.PluginsDirectory, "-s", Constant.Settings, "-t", DataLocation.SettingsDirectory, "-d", "3", "-l", DataLocation.AppExePath];
         Utilities.ExecuteProgram(DataLocation.HostExePath, args);
         App.Current.Shutdown();
     }

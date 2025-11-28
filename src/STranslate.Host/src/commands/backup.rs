@@ -4,6 +4,7 @@ use std::error::Error;
 use std::fs::{self, File};
 use std::io::{self};
 use std::path::{Component, Path, PathBuf};
+use std::process::Command as ProcessCommand;
 use std::thread;
 use std::time::Duration;
 use zip::read::ZipArchive;
@@ -23,6 +24,7 @@ pub fn handle_backup_command(matches: &ArgMatches) -> Result<(), Box<dyn Error>>
     let archive = matches.get_one::<String>("archive").unwrap();
     let delay = *matches.get_one::<u64>("delay").unwrap();
     let verbose = matches.get_flag("verbose");
+    let launch_path = matches.get_one::<String>("launch");
 
     if delay > 0 {
         if verbose {
@@ -72,6 +74,12 @@ pub fn handle_backup_command(matches: &ArgMatches) -> Result<(), Box<dyn Error>>
                 restore_directory(archive, source, target, verbose)?;
                 println!("✅ 恢复完成: {} → {}", source, target);
             }
+        }
+    }
+
+    if let Some(path) = launch_path {
+        if !path.trim().is_empty() {
+            launch_program(path, verbose)?;
         }
     }
 
@@ -300,4 +308,27 @@ fn normalize_zip_path(value: &str) -> String {
 
 fn file_options() -> FileOptions {
     FileOptions::default().compression_method(CompressionMethod::Deflated)
+}
+
+/// 启动指定路径的程序
+fn launch_program(program_path: &str, verbose: bool) -> Result<(), Box<dyn Error>> {
+    let path = Path::new(program_path);
+
+    if !path.exists() {
+        return Err(format!("程序路径不存在: {}", program_path).into());
+    }
+
+    if verbose {
+        println!("🚀 正在启动程序: {}", program_path);
+    }
+
+    ProcessCommand::new(program_path)
+        .spawn()
+        .map_err(|e| format!("启动程序失败: {}", e))?;
+
+    if verbose {
+        println!("✅ 程序已启动");
+    }
+
+    Ok(())
 }

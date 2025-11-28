@@ -832,48 +832,26 @@ public class Utilities
         return runningProcesses.Length > 1;
     }
 
-    public static void ExecuteProgram(string filename, string[] args)
-    {
-        // 使用 StringBuilder 优化字符串拼接
-        var argumentsBuilder = new StringBuilder();
-        foreach (var arg in args)
-        {
-            if (argumentsBuilder.Length > 0)
-                argumentsBuilder.Append(' ');
-
-            // 只有包含空格或特殊字符时才添加引号
-            if (arg.Contains(' ') || arg.Contains('"') || arg.Contains('\t'))
-            {
-                argumentsBuilder.Append('"')
-                    .Append(arg.Replace("\"", "\\\""))
-                    .Append('"');
-            }
-            else
-            {
-                argumentsBuilder.Append(arg);
-            }
-        }
-        var startInfo = new ProcessStartInfo
-        {
-            FileName = filename,
-            Arguments = argumentsBuilder.ToString(),
-            UseShellExecute = false,
-            CreateNoWindow = true
-        };
-
-        using var process = Process.Start(startInfo);
-    }
-
     /// <summary>
-    /// 执行外部程序
+    /// Starts an external program with the specified arguments and options, optionally waiting for it to exit, and
+    /// returns the result of the execution.
     /// </summary>
-    /// <param name="filename">程序文件名或路径</param>
-    /// <param name="args">参数数组</param>
-    /// <param name="useAdmin">是否以管理员权限运行</param>
-    /// <param name="wait">是否等待程序执行完成</param>
-    /// <param name="timeout">超时时间（毫秒），仅在wait=true时有效</param>
-    /// <returns>执行结果，包含是否成功和退出代码</returns>
-    public static (bool Success, int? ExitCode) ExecuteProgram(
+    /// <remarks>If <paramref name="useAdmin"/> is <see langword="true"/>, the method may prompt the user for
+    /// UAC consent. If <paramref name="wait"/> is <see langword="false"/>, the method returns immediately after
+    /// starting the process, and ExitCode is set to 0. If the process fails to start, times out, or is cancelled by the
+    /// user, Success is <see langword="false"/> and ErrorMessage provides details.</remarks>
+    /// <param name="filename">The path to the executable file to start. Cannot be null or empty.</param>
+    /// <param name="args">An array of command-line arguments to pass to the program. May be empty if no arguments are required.</param>
+    /// <param name="useAdmin">Specifies whether to run the program with administrator privileges. If <see langword="true"/>, the process is
+    /// started with elevated rights and may prompt for UAC consent.</param>
+    /// <param name="wait">Specifies whether to wait for the program to exit before returning. If <see langword="true"/>, the method waits
+    /// for the process to complete or until the timeout elapses.</param>
+    /// <param name="timeout">The maximum time, in milliseconds, to wait for the process to exit when <paramref name="wait"/> is <see
+    /// langword="true"/>. Must be greater than zero.</param>
+    /// <returns>A tuple containing a success flag, the exit code if available, and an error message if the process failed to
+    /// start or complete. If successful, Success is <see langword="true"/>, ExitCode contains the process exit code,
+    /// and ErrorMessage is empty.</returns>
+    public static (bool Success, int? ExitCode, string ErrorMessage) ExecuteProgram(
         string filename,
         string[] args,
         bool useAdmin = false,
@@ -881,36 +859,17 @@ public class Utilities
         int timeout = 30000)
     {
         if (string.IsNullOrWhiteSpace(filename))
-            return (false, null);
+            return (false, null, "Filename is null or empty");
 
+        Process? process = null;
         try
         {
-            // 使用 StringBuilder 优化字符串拼接
-            var argumentsBuilder = new StringBuilder();
-            foreach (var arg in args)
+            var processStartInfo = new ProcessStartInfo
             {
-                if (argumentsBuilder.Length > 0)
-                    argumentsBuilder.Append(' ');
-
-                // 只有包含空格或特殊字符时才添加引号
-                if (arg.Contains(' ') || arg.Contains('"') || arg.Contains('\t'))
-                {
-                    argumentsBuilder.Append('"')
-                        .Append(arg.Replace("\"", "\\\""))
-                        .Append('"');
-                }
-                else
-                {
-                    argumentsBuilder.Append(arg);
-                }
-            }
-
-            var processStartInfo = new ProcessStartInfo(filename, argumentsBuilder.ToString())
-            {
-                UseShellExecute = useAdmin, // 管理员权限需要使用Shell执行
-                CreateNoWindow = true,
-                RedirectStandardError = !useAdmin,  // 管理员模式下不能重定向
-                RedirectStandardOutput = !useAdmin
+                FileName = filename,
+                Arguments = BuildArguments(args),
+                UseShellExecute = useAdmin,
+                CreateNoWindow = !useAdmin, // useAdmin 时无法隐藏窗口
             };
 
             if (useAdmin)
@@ -918,160 +877,127 @@ public class Utilities
                 processStartInfo.Verb = "runas";
             }
 
-            using var process = new Process { StartInfo = processStartInfo };
+            process = Process.Start(processStartInfo);
 
-            if (!process.Start())
-                return (false, null);
+            if (process == null)
+                return (false, null, "Failed to start process");
 
-            if (wait)
+            if (!wait)
             {
-                var completed = process.WaitForExit(timeout);
-                if (!completed)
-                {
-                    // 超时后尝试终止进程
-                    try
-                    {
-                        if (!process.HasExited)
-                            process.Kill();
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        // 进程可能已经退出
-                    }
-                    return (false, null);
-                }
-
-                return (true, process.ExitCode);
+                // 不等待时，不使用 using，让进程继续运行
+                process = null; // 防止 finally 中 Dispose
+                return (true, 0, "");
             }
 
-            return (true, null);
+            // 等待进程退出
+            var completed = process.WaitForExit(timeout);
+            if (!completed)
+            {
+                // 超时处理
+                try
+                {
+                    if (!process.HasExited)
+                    {
+                        process.Kill();
+                        process.WaitForExit(5000); // 等待进程完全退出
+                    }
+                }
+                catch (Exception killEx)
+                {
+                    return (false, null, $"Timeout and failed to kill: {killEx.Message}");
+                }
+                return (false, null, "Process timeout");
+            }
+
+            // 安全获取退出码
+            int exitCode;
+            try
+            {
+                exitCode = process.ExitCode;
+            }
+            catch (Exception)
+            {
+                return (false, null, "Failed to retrieve exit code");
+            }
+
+            return (true, exitCode, "");
         }
-        catch (Win32Exception ex) when (ex.NativeErrorCode == 1223) // 用户取消UAC
+        catch (Win32Exception ex) when (ex.NativeErrorCode == 1223)
         {
-            return (false, null);
+            return (false, null, "User cancelled UAC prompt");
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return (false, null);
+            return (false, null, ex.Message);
+        }
+        finally
+        {
+            process?.Dispose();
         }
     }
 
     /// <summary>
-    /// 执行外部程序的异步版本
+    /// 正确转义命令行参数
+    /// 参考: https://docs.microsoft.com/en-us/archive/blogs/twistylittlepassagesallalike/everyone-quotes-command-line-arguments-the-wrong-way
     /// </summary>
-    /// <param name="filename">程序文件名或路径</param>
-    /// <param name="args">参数数组</param>
-    /// <param name="useAdmin">是否以管理员权限运行</param>
-    /// <param name="timeout">超时时间（毫秒）</param>
-    /// <param name="cancellationToken">取消令牌</param>
-    /// <returns>执行结果，包含是否成功、退出代码和输出</returns>
-    public static async Task<(bool Success, int? ExitCode, string? Output, string? Error)> ExecuteProgramAsync(
-        string filename,
-        string[] args,
-        bool useAdmin = false,
-        int timeout = 30000,
-        CancellationToken cancellationToken = default)
+    private static string BuildArguments(string[] args)
     {
-        if (string.IsNullOrWhiteSpace(filename))
-            return (false, null, null, null);
+        if (args == null || args.Length == 0)
+            return string.Empty;
 
-        try
+        var result = new StringBuilder();
+
+        foreach (var arg in args)
         {
-            var argumentsBuilder = new StringBuilder();
-            foreach (var arg in args)
-            {
-                if (argumentsBuilder.Length > 0)
-                    argumentsBuilder.Append(' ');
+            if (result.Length > 0)
+                result.Append(' ');
 
-                if (arg.Contains(' ') || arg.Contains('"') || arg.Contains('\t'))
+            // 判断是否需要引号
+            if (string.IsNullOrEmpty(arg))
+            {
+                result.Append("\"\"");
+                continue;
+            }
+
+            bool needsQuotes = arg.Contains(' ') || arg.Contains('\t') || arg.Contains('"');
+
+            if (!needsQuotes)
+            {
+                result.Append(arg);
+                continue;
+            }
+
+            // 添加引号并正确转义
+            result.Append('"');
+
+            int backslashCount = 0;
+            foreach (char c in arg)
+            {
+                if (c == '\\')
                 {
-                    argumentsBuilder.Append('"')
-                        .Append(arg.Replace("\"", "\\\""))
-                        .Append('"');
+                    backslashCount++;
+                }
+                else if (c == '"')
+                {
+                    // 转义前面的反斜杠和当前引号
+                    result.Append('\\', backslashCount * 2 + 1);
+                    result.Append('"');
+                    backslashCount = 0;
                 }
                 else
                 {
-                    argumentsBuilder.Append(arg);
+                    result.Append('\\', backslashCount);
+                    result.Append(c);
+                    backslashCount = 0;
                 }
             }
 
-            var processStartInfo = new ProcessStartInfo(filename, argumentsBuilder.ToString())
-            {
-                UseShellExecute = useAdmin,
-                CreateNoWindow = true,
-                RedirectStandardError = !useAdmin,
-                RedirectStandardOutput = !useAdmin
-            };
-
-            if (useAdmin)
-            {
-                processStartInfo.Verb = "runas";
-            }
-
-            using var process = new Process { StartInfo = processStartInfo };
-
-            if (!process.Start())
-                return (false, null, null, null);
-
-            if (useAdmin)
-            {
-                // 管理员模式下无法读取输出，只等待完成
-                using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                cts.CancelAfter(timeout);
-
-                try
-                {
-                    await process.WaitForExitAsync(cts.Token);
-                    return (true, process.ExitCode, null, null);
-                }
-                catch (OperationCanceledException)
-                {
-                    try
-                    {
-                        if (!process.HasExited)
-                            process.Kill();
-                    }
-                    catch (InvalidOperationException) { }
-                    return (false, null, null, null);
-                }
-            }
-            else
-            {
-                // 非管理员模式下可以读取输出
-                var outputTask = process.StandardOutput.ReadToEndAsync();
-                var errorTask = process.StandardError.ReadToEndAsync();
-
-                using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                cts.CancelAfter(timeout);
-
-                try
-                {
-                    await process.WaitForExitAsync(cts.Token);
-                    var output = await outputTask;
-                    var error = await errorTask;
-
-                    return (true, process.ExitCode, output, error);
-                }
-                catch (OperationCanceledException)
-                {
-                    try
-                    {
-                        if (!process.HasExited)
-                            process.Kill();
-                    }
-                    catch (InvalidOperationException) { }
-                    return (false, null, null, null);
-                }
-            }
+            // 结尾的反斜杠需要双倍转义（因为后面有引号）
+            result.Append('\\', backslashCount * 2);
+            result.Append('"');
         }
-        catch (Win32Exception ex) when (ex.NativeErrorCode == 1223)
-        {
-            return (false, null, null, null);
-        }
-        catch (Exception)
-        {
-            return (false, null, null, null);
-        }
+
+        return result.ToString();
     }
 
     #endregion
