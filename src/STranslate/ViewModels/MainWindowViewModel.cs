@@ -1183,6 +1183,33 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
+    private void CopyPascalCase(string text)
+    {
+        if (string.IsNullOrEmpty(text)) return;
+        var pascalCaseText = Utilities.ToPascalCase(text);
+        Utilities.SetText(pascalCaseText);
+        _snakebar.ShowSuccess(_i18n.GetTranslation("CopySuccess"));
+    }
+
+    [RelayCommand]
+    private void CopyCamelCase(string text)
+    {
+        if (string.IsNullOrEmpty(text)) return;
+        var pascalCaseText = Utilities.ToCamelCase(text);
+        Utilities.SetText(pascalCaseText);
+        _snakebar.ShowSuccess(_i18n.GetTranslation("CopySuccess"));
+    }
+
+    [RelayCommand]
+    private void CopySnakeCase(string text)
+    {
+        if (string.IsNullOrEmpty(text)) return;
+        var pascalCaseText = Utilities.ToSnakeCase(text);
+        Utilities.SetText(pascalCaseText);
+        _snakebar.ShowSuccess(_i18n.GetTranslation("CopySuccess"));
+    }
+
+    [RelayCommand]
     private async Task InsertAsync(string text)
     {
         if (string.IsNullOrEmpty(text)) return;

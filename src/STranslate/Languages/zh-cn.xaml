@@ -303,7 +303,13 @@
     <sys:String x:Key="WaitingForPreviousExecution">当前正在执行，请等待</sys:String>
     <sys:String x:Key="InputContentIsEmpty">请输入内容后执行</sys:String>
 
-    <!--  // Output Control Context Menu //  -->
+    <!--  // Output Control //  -->
+    <sys:String x:Key="CopyAsPascalCase">复制成大驼峰</sys:String>
+    <sys:String x:Key="CopyAsCamelCase">复制成大驼峰</sys:String>
+    <sys:String x:Key="CopyAsSnakeCase">复制成蛇形</sys:String>
+    <sys:String x:Key="InsertText">插入文本</sys:String>
+    <sys:String x:Key="BackTranslation">回译</sys:String>
+
     <sys:String x:Key="ExecuteTranslation">执行翻译</sys:String>
     <sys:String x:Key="AutoBackTranslation">自动回译</sys:String>
     <sys:String x:Key="ConfigureService">配置服务</sys:String>

@@ -621,24 +621,44 @@
                                 <control:IconButton
                                     Command="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=PlayAudioCommand}"
                                     CommandParameter="{Binding Plugin.TransResult.Text}"
-                                    Icon="{x:Static ui:FluentSystemIcons.Speaker2_20_Regular}" />
+                                    Icon="{x:Static ui:FluentSystemIcons.Speaker2_20_Regular}"
+                                    ToolTip="{DynamicResource Tts}" />
                                 <control:IconButton
                                     Command="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=CopyCommand}"
                                     CommandParameter="{Binding Plugin.TransResult.Text}"
-                                    Icon="{x:Static ui:FluentSystemIcons.Copy_20_Regular}" />
+                                    Icon="{x:Static ui:FluentSystemIcons.Copy_20_Regular}"
+                                    ToolTip="{DynamicResource Copy}" />
+                                <control:IconButton
+                                    Command="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=CopyPascalCaseCommand}"
+                                    CommandParameter="{Binding Plugin.TransResult.Text}"
+                                    Icon="{x:Static ui:FluentSystemIcons.TextCaseTitle_20_Regular}"
+                                    ToolTip="{DynamicResource CopyAsPascalCase}" />
+                                <control:IconButton
+                                    Command="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=CopyCamelCaseCommand}"
+                                    CommandParameter="{Binding Plugin.TransResult.Text}"
+                                    Icon="{x:Static ui:FluentSystemIcons.TextChangeCase_20_Regular}"
+                                    ToolTip="{DynamicResource CopyAsCamelCase}" />
+                                <control:IconButton
+                                    Command="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=CopySnakeCaseCommand}"
+                                    CommandParameter="{Binding Plugin.TransResult.Text}"
+                                    Icon="{x:Static ui:FluentSystemIcons.TextCaseLowercase_20_Regular}"
+                                    ToolTip="{DynamicResource CopyAsSnakeCase}" />
                                 <control:IconButton
                                     Command="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=InsertCommand}"
                                     CommandParameter="{Binding Plugin.TransResult.Text}"
-                                    Icon="{x:Static ui:FluentSystemIcons.TextHanging_20_Regular}" />
+                                    Icon="{x:Static ui:FluentSystemIcons.TextHanging_20_Regular}"
+                                    ToolTip="{DynamicResource InsertText}" />
                                 <control:IconButton
                                     Command="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=TransBackCommand}"
                                     CommandParameter="{Binding}"
                                     Icon="{x:Static ui:FluentSystemIcons.Flash_20_Regular}"
+                                    ToolTip="{DynamicResource BackTranslation}"
                                     Visibility="{Binding Options.AutoBackTranslation, Converter={cnvt:BoolToVisibilityInverseConverter}}" />
                                 <control:IconButton
                                     Command="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=TransBackCommand}"
                                     CommandParameter="{Binding}"
                                     Icon="{x:Static ui:FluentSystemIcons.FlashAuto_20_Regular}"
+                                    ToolTip="{DynamicResource BackTranslation}"
                                     Visibility="{Binding Options.AutoBackTranslation, Converter={cnvt:BoolToVisibilityConverter}}" />
                             </ikw:SimpleStackPanel>
                         </Grid>

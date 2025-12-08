@@ -31,6 +31,97 @@ public class Utilities
 {
     #region StringUtils
 
+    public static string ToPascalCase(string text)
+    {
+        return ConvertCase(text, false);
+    }
+
+    public static string ToCamelCase(string text)
+    {
+        return ConvertCase(text, true);
+    }
+
+    public static string ToSnakeCase(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return string.Empty;
+
+        var words = text.Split([' '], StringSplitOptions.RemoveEmptyEntries);
+        if (words.Length == 0)
+            return string.Empty;
+
+        // 预估容量：每个单词长度 + 下划线
+        var capacity = words.Sum(w => w.Length) + words.Length - 1;
+        var sb = new StringBuilder(capacity);
+
+        for (var i = 0; i < words.Length; i++)
+        {
+            if (i > 0)
+                sb.Append('_');
+            sb.Append(words[i].ToLower());
+        }
+
+        return sb.ToString();
+    }
+
+    private static string ConvertCase(string text, bool isCamelCase)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return string.Empty;
+
+        try
+        {
+            var lines = text.Split([Environment.NewLine], StringSplitOptions.None);
+            var processedLines = new string[lines.Length];
+
+            for (var i = 0; i < lines.Length; i++)
+            {
+                var words = lines[i].Split([' '], StringSplitOptions.RemoveEmptyEntries);
+                processedLines[i] = ConvertWords(words, isCamelCase);
+            }
+
+            return string.Join(Environment.NewLine, processedLines);
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+
+    private static string ConvertWords(string[] words, bool isCamelCase)
+    {
+        if (words.Length == 0)
+            return string.Empty;
+
+        var capacity = words.Sum(w => w.Length);
+        var sb = new StringBuilder(capacity);
+
+        for (var i = 0; i < words.Length; i++)
+        {
+            var word = words[i];
+            if (string.IsNullOrEmpty(word))
+                continue;
+
+            // 第一个单词且是驼峰命名时，首字母小写
+            if (i == 0 && isCamelCase)
+            {
+                sb.Append(char.ToLower(word[0]));
+            }
+            else
+            {
+                sb.Append(char.ToUpper(word[0]));
+            }
+
+            // 追加剩余字符（小写）
+            if (word.Length > 1)
+            {
+                sb.Append(word[1..].ToLower());
+            }
+        }
+
+        return sb.ToString();
+    }
+
     /// <summary>
     ///     自动识别语种
     /// </summary>

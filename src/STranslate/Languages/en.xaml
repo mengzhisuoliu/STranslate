@@ -303,7 +303,13 @@
     <sys:String x:Key="WaitingForPreviousExecution">Currently executing, please wait</sys:String>
     <sys:String x:Key="InputContentIsEmpty">Please enter content before executing</sys:String>
 
-    <!--  // Output Control Context Menu //  -->
+    <!--  // Output Control //  -->
+    <sys:String x:Key="CopyAsPascalCase">Copy as PascalCase</sys:String>
+    <sys:String x:Key="CopyAsCamelCase">Copy as camelCase</sys:String>
+    <sys:String x:Key="CopyAsSnakeCase">Copy as snake_case</sys:String>
+    <sys:String x:Key="InsertText">Insert Text</sys:String>
+    <sys:String x:Key="BackTranslation">Back Translation</sys:String>
+
     <sys:String x:Key="ExecuteTranslation">Execute Translation</sys:String>
     <sys:String x:Key="AutoBackTranslation">Auto Trans Back</sys:String>
     <sys:String x:Key="ConfigureService">Configure Service</sys:String>

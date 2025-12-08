@@ -240,7 +240,10 @@
                 <control:OutputControl
                     Margin="0,0,10,0"
                     CleanTransBackCommand="{Binding CleanTransBackCommand}"
+                    CopyCamelCaseCommand="{Binding CopyCamelCaseCommand}"
                     CopyCommand="{Binding CopyCommand}"
+                    CopyPascalCaseCommand="{Binding CopyPascalCaseCommand}"
+                    CopySnakeCaseCommand="{Binding CopySnakeCaseCommand}"
                     ExplainCommand="{Binding ExplainCommand}"
                     InsertCommand="{Binding InsertCommand}"
                     ItemsSource="{Binding TranslateService.Services}"

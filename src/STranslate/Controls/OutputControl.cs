@@ -133,4 +133,40 @@ public class OutputControl : ItemsControl
             typeof(ICommand),
             typeof(OutputControl));
 
+    public ICommand? CopyPascalCaseCommand
+    {
+        get => (ICommand?)GetValue(CopyPascalCaseCommandProperty);
+        set => SetValue(CopyPascalCaseCommandProperty, value);
+    }
+
+    public static readonly DependencyProperty CopyPascalCaseCommandProperty =
+        DependencyProperty.Register(
+            nameof(CopyPascalCaseCommand),
+            typeof(ICommand),
+            typeof(OutputControl));
+
+    public ICommand? CopyCamelCaseCommand
+    {
+        get => (ICommand?)GetValue(CopyCamelCaseCommandProperty);
+        set => SetValue(CopyCamelCaseCommandProperty, value);
+    }
+
+    public static readonly DependencyProperty CopyCamelCaseCommandProperty =
+        DependencyProperty.Register(
+            nameof(CopyCamelCaseCommand),
+            typeof(ICommand),
+            typeof(OutputControl));
+
+    public ICommand? CopySnakeCaseCommand
+    {
+        get => (ICommand?)GetValue(CopySnakeCaseCommandProperty);
+        set => SetValue(CopySnakeCaseCommandProperty, value);
+    }
+
+    public static readonly DependencyProperty CopySnakeCaseCommandProperty =
+        DependencyProperty.Register(
+            nameof(CopySnakeCaseCommand),
+            typeof(ICommand),
+            typeof(OutputControl));
+
 }
