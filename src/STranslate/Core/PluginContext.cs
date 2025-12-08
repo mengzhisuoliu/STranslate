@@ -10,7 +10,7 @@ namespace STranslate.Core;
 
 public class PluginContext(PluginMetaData metaData, string serviceId) : IPluginContext
 {
-    private ISavable Savable { get => field; set => field = value; } = null!;
+    private IPluginSavable Savable { get => field; set => field = value; } = null!;
 
     public PluginMetaData MetaData => metaData;
 
@@ -53,5 +53,9 @@ public class PluginContext(PluginMetaData metaData, string serviceId) : IPluginC
 
     public void SaveSettingStorage<T>() where T : new() => Savable?.Save();
 
-    public void Dispose() => Savable.Delete();
+    public void Dispose()
+    {
+        Savable.Delete();
+        Savable.Clean();
+    }
 }
