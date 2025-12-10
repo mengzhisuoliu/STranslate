@@ -1,21 +1,21 @@
 <div align="center">
 
 <p>
-<a href="https://github.com/zggsong/STranslate" target="_blank">
+<a href="https://github.com/STranslate/STranslate" target="_blank">
 <img align="center" alt="STranslate" width="200" src="./images/favicon.svg" />
 </a>
 </p>
 <p>
-<a href="https://github.com/ZGGSONG/STranslate/blob/main/LICENSE" target="_self">
+<a href="https://github.com/STranslate/STranslate/blob/main/LICENSE" target="_self">
  <img alt="Latest GitHub release" src="https://img.shields.io/github/license/ZGGSONG/STranslate" />
 </a>
-<a href="https://github.com/ZGGSONG/STranslate/releases/latest" target="_blank">
+<a href="https://github.com/STranslate/STranslate/releases/latest" target="_blank">
  <img alt="Latest GitHub release" src="https://img.shields.io/github/release/ZGGSONG/STranslate.svg" />
 </a>
-<a href="https://github.com/ZGGSONG/STranslate/releases" target="_self">
+<a href="https://github.com/STranslate/STranslate/releases" target="_self">
  <img alt="Downloads" src="https://img.shields.io/github/downloads/ZGGSONG/STranslate/total" />
 </a>
-<a href="https://github.com/ZGGSONG/STranslate/discussions" target="_self">
+<a href="https://github.com/STranslate/STranslate/discussions" target="_self">
  <img alt="Discussions" src="https://img.shields.io/github/discussions/ZGGSONG/STranslate" />
 </a>
 </p>
@@ -34,11 +34,11 @@
 
 | Overseas | Domestic |
 | :--: | :--: |
-| **[Github](https://github.com/ZGGSONG/STranslate)** | **[Gitee](https://gitee.com/zggsong/STranslate)** |
+| **[Github](https://github.com/STranslate/STranslate)** | **[Gitee](https://gitee.com/zggsong/STranslate)** |
 
 ## Installation
 
-Download the latest [Release](https://github.com/ZGGSONG/STranslate/releases) version and extract it to use.
+Download the latest [Release](https://github.com/STranslate/STranslate/releases) version and extract it to use.
 
 ## Usage
 
@@ -46,7 +46,7 @@ Download the latest [Release](https://github.com/ZGGSONG/STranslate/releases) ve
 
 ## Discussion
 
-If you have questions, please go to [Discussions](https://github.com/ZGGSONG/STranslate/discussions) for discussion.
+If you have questions, please go to [Discussions](https://github.com/STranslate/STranslate/discussions) for discussion.
 
 > If you want to join the user exchange group, you can scan the QR code below
 
@@ -68,7 +68,7 @@ If you like it, you can buy the author a cup of coffee.
 
 ## Author
 
-**STranslate** © [zggsong](https://github.com/zggsong), Released under the [MIT](https://github.com/ZGGSONG/STranslate/blob/main/LICENSE) License.<br>
+**STranslate** © [zggsong](https://github.com/zggsong), Released under the [MIT](https://github.com/STranslate/STranslate/blob/main/LICENSE) License.<br>
 
 > Website [Blog](https://www.zggsong.com) · GitHub [@zggsong](https://github.com/zggsong)
 

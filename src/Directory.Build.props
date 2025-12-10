@@ -4,7 +4,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <EnableWindowsTargeting>true</EnableWindowsTargeting>
-        <RepositoryUrl>https://github.com/ZGGSONG/STranslate/</RepositoryUrl>
+        <RepositoryUrl>https://github.com/STranslate/STranslate/</RepositoryUrl>
 
         <!--// 禁用 SourceLink 功能以避免编译警报 //-->
         <EnableSourceLink>false</EnableSourceLink>

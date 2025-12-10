@@ -1,21 +1,21 @@
 <div align="center">
 
 <p>
-<a href="https://github.com/zggsong/STranslate" target="_blank">
+<a href="https://github.com/STranslate/STranslate" target="_blank">
 <img align="center" alt="STranslate" width="200" src="./images/favicon.svg" />
 </a>
 </p>
 <p>
-<a href="https://github.com/ZGGSONG/STranslate/blob/main/LICENSE" target="_self">
+<a href="https://github.com/STranslate/STranslate/blob/main/LICENSE" target="_self">
  <img alt="Latest GitHub release" src="https://img.shields.io/github/license/ZGGSONG/STranslate" />
 </a>
-<a href="https://github.com/ZGGSONG/STranslate/releases/latest" target="_blank">
+<a href="https://github.com/STranslate/STranslate/releases/latest" target="_blank">
  <img alt="Latest GitHub release" src="https://img.shields.io/github/release/ZGGSONG/STranslate.svg" />
 </a>
-<a href="https://github.com/ZGGSONG/STranslate/releases" target="_self">
+<a href="https://github.com/STranslate/STranslate/releases" target="_self">
  <img alt="Downloads" src="https://img.shields.io/github/downloads/ZGGSONG/STranslate/total" />
 </a>
-<a href="https://github.com/ZGGSONG/STranslate/discussions" target="_self">
+<a href="https://github.com/STranslate/STranslate/discussions" target="_self">
  <img alt="Discussions" src="https://img.shields.io/github/discussions/ZGGSONG/STranslate" />
 </a>
 </p>
@@ -34,12 +34,12 @@
 
 | 国外 | 国内 |
 | :--: | :--: |
-| **[Github](https://github.com/ZGGSONG/STranslate)** | **[Gitee](https://gitee.com/zggsong/STranslate)** |
+| **[Github](https://github.com/STranslate/STranslate)** | **[Gitee](https://gitee.com/zggsong/STranslate)** |
 
 
 ## 安装
 
-下载最新 [Release](https://github.com/ZGGSONG/STranslate/releases) 版本后解压即可使用
+下载最新 [Release](https://github.com/STranslate/STranslate/releases) 版本后解压即可使用
 
 ## 使用
 
@@ -47,7 +47,7 @@
 
 ## 讨论
 
-有疑问移步 [Discussions](https://github.com/ZGGSONG/STranslate/discussions) 进行讨论
+有疑问移步 [Discussions](https://github.com/STranslate/STranslate/discussions) 进行讨论
 
 > 如果您想加入用户交流群，可以扫描下方二维码
 
@@ -69,7 +69,7 @@
 
 ## 作者
 
-**STranslate** © [zggsong](https://github.com/zggsong), Released under the [MIT](https://github.com/ZGGSONG/STranslate/blob/main/LICENSE) License.<br>
+**STranslate** © [zggsong](https://github.com/zggsong), Released under the [MIT](https://github.com/STranslate/STranslate/blob/main/LICENSE) License.<br>
 
 > Website [Blog](https://www.zggsong.com) · GitHub [@zggsong](https://github.com/zggsong)
 

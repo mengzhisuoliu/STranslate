@@ -1,7 +1,7 @@
 # 从命令行参数获取版本号,如果未提供则使用默认值
 param(
     [string]$Version = "2.0.0",
-    [string]$RepoUrl = "https://github.com/ZGGSONG/STranslate"
+    [string]$RepoUrl = "https://github.com/STranslate/STranslate"
 )
 
 $ErrorActionPreference = "Stop"
@@ -44,17 +44,17 @@ $downloadedFiles = @()
 try {
     # 记录下载前的文件
     $filesBefore = Get-ChildItem -Path $OutputPath -File | Select-Object -ExpandProperty Name
-    
+
     vpk download github --repoUrl $RepoUrl -o $OutputPath
-    
+
     if ($LASTEXITCODE -eq 0) {
         Log "成功下载最新 release" "Green"
         $downloadSuccess = $true
-        
+
         # 记录下载后新增的文件
         $filesAfter = Get-ChildItem -Path $OutputPath -File | Select-Object -ExpandProperty Name
         $downloadedFiles = $filesAfter | Where-Object { $_ -notin $filesBefore }
-        
+
         if ($downloadedFiles.Count -gt 0) {
             Log "已下载文件: $($downloadedFiles -join ', ')" "Cyan"
         }
@@ -76,6 +76,45 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Log "打包完成!" "Green"
+
+# 在 STranslate-win-Portable.zip 的 current 目录中添加 PortableConfig 文件夹
+Log "处理便携版 zip 文件..." "Cyan"
+
+$PortableZipPath = Join-Path $OutputPath "STranslate-win-Portable.zip"
+
+if (Test-Path $PortableZipPath) {
+    try {
+        # 加载 .NET 压缩程序集
+        Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+        # 以更新模式打开 ZIP 文件
+        $zip = [System.IO.Compression.ZipFile]::Open($PortableZipPath, [System.IO.Compression.ZipArchiveMode]::Update)
+
+        try {
+            # 在 zip 内创建空目录 entry：current/PortableConfig/
+            $entryPath = "current/PortableConfig/"
+
+            # 如果 entry 已存在先删除（避免重复）
+            $existing = $zip.GetEntry($entryPath)
+            if ($existing) {
+                $existing.Delete()
+                Log "已删除旧的 PortableConfig 目录" "Gray"
+            }
+
+            # 创建目录 entry（目录 entry 必须以 "/" 结尾）
+            $zip.CreateEntry($entryPath) | Out-Null
+            Log "处理成功「已在 current 目录中添加 PortableConfig 文件夹」" "Green"
+        }
+        finally {
+            $zip.Dispose()
+        }
+    }
+    catch {
+        Log "错误: 处理便携版 zip 文件时出错: $($_.Exception.Message)" "Red"
+    }
+} else {
+    Log "警告: 未找到 STranslate-win-Portable.zip 文件，跳过 PortableConfig 添加" "Yellow"
+}
 
 # 清理下载的文件
 if ($downloadSuccess -and $downloadedFiles.Count -gt 0) {

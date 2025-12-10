@@ -5,4 +5,4 @@
 - 支持 .NET 10 框架，提升应用性能和兼容性。
 - 与 `1.x` 版本不兼容，升级前请备份数据。
 
- **完整更新日志:** [1.5.5.802...2.0.0](https://github.com/ZGGSONG/STranslate/compare/1.5.5.802...2.0.0)
+ **完整更新日志:** [1.5.5.802...2.0.0](https://github.com/STranslate/STranslate/compare/1.5.5.802...2.0.0)
