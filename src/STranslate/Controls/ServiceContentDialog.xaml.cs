@@ -22,8 +22,11 @@ public partial class ServiceContentDialog : INotifyPropertyChanged
 
         _collectionViewSource = new() { Source = itemsSource };
         _collectionViewSource.Filter += OnFilter;
-        _collectionViewSource.SortDescriptions.Add(new SortDescription(nameof(PluginMetaData.IsPrePlugin), ListSortDirection.Descending));
-        _collectionViewSource.SortDescriptions.Add(new SortDescription(nameof(PluginMetaData.Name), ListSortDirection.Ascending));
+
+        // 使用自定义分组
+        _collectionViewSource.GroupDescriptions.Add(new CustomPluginGroupDescription());
+
+        // 自定义排序
         if (_collectionViewSource.View is ListCollectionView listCollectionView)
         {
             listCollectionView.CustomSort = new PluginMetaDataComparer();
@@ -96,6 +99,31 @@ public partial class ServiceContentDialog : INotifyPropertyChanged
 
         PART_FilterTextBox.Focus();
         PART_FilterTextBox.SelectAll();
+    }
+}
+
+internal class CustomPluginGroupDescription : GroupDescription
+{
+    public override object GroupNameFromItem(object item, int level, System.Globalization.CultureInfo culture)
+    {
+        if (item is not PluginMetaData plugin)
+        {
+            return "其他";
+        }
+
+        var isBuiltIn = plugin.IsPrePlugin && plugin.Name.Contains("内置", StringComparison.OrdinalIgnoreCase);
+
+        if (isBuiltIn)
+        {
+            return "内置插件";
+        }
+
+        if (plugin.IsPrePlugin)
+        {
+            return "预装插件";
+        }
+
+        return "扩展插件";
     }
 }
 
