@@ -1,5 +1,6 @@
 using iNKORE.UI.WPF.Modern.Controls;
 using STranslate.Plugin;
+using System.Collections;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -21,6 +22,12 @@ public partial class ServiceContentDialog : INotifyPropertyChanged
 
         _collectionViewSource = new() { Source = itemsSource };
         _collectionViewSource.Filter += OnFilter;
+        _collectionViewSource.SortDescriptions.Add(new SortDescription(nameof(PluginMetaData.IsPrePlugin), ListSortDirection.Descending));
+        _collectionViewSource.SortDescriptions.Add(new SortDescription(nameof(PluginMetaData.Name), ListSortDirection.Ascending));
+        if (_collectionViewSource.View is ListCollectionView listCollectionView)
+        {
+            listCollectionView.CustomSort = new PluginMetaDataComparer();
+        }
     }
 
     private void OnFilter(object sender, FilterEventArgs e)
@@ -89,5 +96,44 @@ public partial class ServiceContentDialog : INotifyPropertyChanged
 
         PART_FilterTextBox.Focus();
         PART_FilterTextBox.SelectAll();
+    }
+}
+
+internal class PluginMetaDataComparer : IComparer
+{
+    public int Compare(object? x, object? y)
+    {
+        if (x is not PluginMetaData pluginX || y is not PluginMetaData pluginY)
+        {
+            return 0;
+        }
+
+        var isBuiltInX = pluginX.IsPrePlugin && pluginX.Name.Contains("内置", StringComparison.OrdinalIgnoreCase);
+        var isBuiltInY = pluginY.IsPrePlugin && pluginY.Name.Contains("内置", StringComparison.OrdinalIgnoreCase);
+
+        // 优先级1: IsPrePlugin=true 且 Name 包含"内置"
+        if (isBuiltInX && !isBuiltInY)
+        {
+            return -1;
+        }
+
+        if (!isBuiltInX && isBuiltInY)
+        {
+            return 1;
+        }
+
+        // 优先级2: IsPrePlugin=true
+        if (pluginX.IsPrePlugin && !pluginY.IsPrePlugin)
+        {
+            return -1;
+        }
+
+        if (!pluginX.IsPrePlugin && pluginY.IsPrePlugin)
+        {
+            return 1;
+        }
+
+        // 同级别按 Name 排序
+        return string.Compare(pluginX.Name, pluginY.Name, StringComparison.OrdinalIgnoreCase);
     }
 }
