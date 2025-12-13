@@ -1,19 +1,19 @@
 ## 更新
 
-- 更新外部调用监听地址为 `127.0.0.1`
-- 添加特殊的翻译服务启用提示
-- 在打包Portable版本默认添加便携配置目录
-- 优化关于UI的一些细节
-- 点击升级后询问是否确认升级
-- 添加可选文本识别后自动复制到剪贴板
-- 添加可选托盘图标隐藏
-- 当检测到服务丢失时，尝试清理特定的服务配置和目录
-- 优化服务选择弹窗的显示
-- LLM翻译提示词配置选项默认中文 @monbed
-- 修复提示文本 @monbed
-- 添加图片质量到插件上下文，以便文本识别插件根据质量调整识别参数
-- 更新内置 OpenAI 插件到最新 1.0.1
+- 修复 sponsor url
+
+## 图片翻译
+
+1. 配置启用文本识别服务
+2. 文本翻译界面直接将服务拖拽到右上角图片翻译栏即可，或者右键服务选择图片翻译
+
+## 插件安装
+
+将spkg文件拖拽至插件页面即可安装
 
 更多插件详见 [https://github.com/STranslate](https://github.com/STranslate)
 
- **完整更新日志:** [2.0.0...2.0.1](https://github.com/STranslate/STranslate/compare/2.0.0...2.0.1)
+<img height="540" alt="图片" src="https://github.com/user-attachments/assets/37155712-818b-43ab-bafa-ccbc4900947b" />
+
+
+ **完整更新日志:** [2.0.1...2.0.2](https://github.com/STranslate/STranslate/compare/2.0.1...2.0.2)

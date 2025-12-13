@@ -27,7 +27,7 @@ public class Constant
     public const string BackupFileName = ".BACKUP";
 
     public const string Github = "https://github.com/STranslate/STranslate";
-    public const string Sponsor = "https://github.com/STranslate/STranslate/tree/2.0?tab=readme-ov-file#donations";
+    public const string Sponsor = "https://github.com/STranslate/STranslate/tree/main?tab=readme-ov-file#donations";
     public const string Dev = "Dev";
     public static readonly string Version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location.NonNull()).ProductVersion.NonNull();
 
