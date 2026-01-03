@@ -234,6 +234,37 @@ public class HeaderControl : Control
 
     #endregion
 
+    #region OCR
+
+    public bool IsOcrVisible
+    {
+        get => (bool)GetValue(IsOcrVisibleProperty);
+        set => SetValue(IsOcrVisibleProperty, value);
+    }
+
+    public static readonly DependencyProperty IsOcrVisibleProperty =
+        DependencyProperty.Register(
+            nameof(IsOcrVisible),
+            typeof(bool),
+            typeof(HeaderControl),
+            new FrameworkPropertyMetadata(
+                true,
+                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+    public ICommand? OcrCommand
+    {
+        get => (ICommand?)GetValue(OcrCommandProperty);
+        set => SetValue(OcrCommandProperty, value);
+    }
+
+    public static readonly DependencyProperty OcrCommandProperty =
+        DependencyProperty.Register(
+            nameof(OcrCommand),
+            typeof(ICommand),
+            typeof(HeaderControl));
+
+    #endregion
+
     public override void OnApplyTemplate()
     {
         base.OnApplyTemplate();

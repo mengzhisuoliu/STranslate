@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-Content:*)",
+      "Bash(Select-Object -Skip 77 -First 8:*)",
+      "Bash(cat:*)",
+      "Bash(dotnet build:*)"
+    ]
+  }
+}

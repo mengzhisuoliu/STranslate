@@ -81,6 +81,11 @@
                                     ToolTip="{DynamicResource General_ScreenshotTranslateInImage}"
                                     Type="Toggle"
                                     Visibility="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=IsScreenshotTranslateInImageVisible, Converter={cnvt:BoolToVisibilityConverter}}" />
+                                <control:IconButton
+                                    Command="{TemplateBinding OcrCommand}"
+                                    Icon="{x:Static ui:FluentSystemIcons.ScanType_20_Regular}"
+                                    ToolTip="{DynamicResource Ocr}"
+                                    Visibility="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=IsOcrVisible, Converter={cnvt:BoolToVisibilityConverter}}" />
                             </ikw:SimpleStackPanel>
                         </DockPanel>
                     </Border>

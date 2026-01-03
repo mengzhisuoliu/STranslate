@@ -97,8 +97,10 @@
             IsHistoryNavigationVisible="{Binding Settings.IsHistoryNavigationVisible}"
             IsMouseHook="{Binding IsMouseHook}"
             IsMouseHookVisible="{Binding Settings.IsMouseHookVisible}"
+            IsOcrVisible="{Binding Settings.IsOcrVisible}"
             IsScreenshotTranslateInImageVisible="{Binding Settings.IsScreenshotTranslateInImageVisible}"
             IsTopmost="{Binding IsTopmost}"
+            OcrCommand="{Binding OcrCommand}"
             ScreenshotTranslateInImage="{Binding Settings.ScreenshotTranslateInImage}"
             SettingCommand="{Binding OpenSettingsCommand}" />
 
