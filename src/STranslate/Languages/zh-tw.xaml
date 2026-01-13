@@ -334,6 +334,7 @@
     <sys:String x:Key="IdentifiedCache">緩存</sys:String>
     <sys:String x:Key="CopyServiceNotFound">未找到第 {0} 項服務</sys:String>
     <sys:String x:Key="CopiedToClipboard">已複製「{0}」結果</sys:String>
+    <sys:String x:Key="SaveToVocabulary">添加到生詞本</sys:String>
 
     <!--  // Language Part //  -->
     <sys:String x:Key="SwapLanguage">交換原始-目標語言</sys:String>

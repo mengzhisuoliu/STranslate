@@ -16,6 +16,11 @@ public interface IVocabularyPlugin : IPlugin
     /// <summary>
     /// 保存生词并附带笔记
     /// </summary>
+    /// <remarks>
+    /// 默认实现仅保存生词，不处理笔记
+    /// * 该方法在输出控件中调用，用于保存翻译结果作为生词的笔记
+    /// * 如果插件需要处理笔记，请重写该方法
+    /// </remarks>
     Task<VocabularyResult> SaveWithNoteAsync(string word, string note, CancellationToken cancellationToken = default)
     {
         return SaveAsync(word, cancellationToken);
