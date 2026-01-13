@@ -346,6 +346,7 @@
     <sys:String x:Key="CopyAsSnakeCase">複製成蛇形</sys:String>
     <sys:String x:Key="InsertText">插入文字</sys:String>
     <sys:String x:Key="BackTranslation">回譯</sys:String>
+    <sys:String x:Key="SaveToVocabularyWithNote">添加到生詞本(含筆記)</sys:String>
 
     <sys:String x:Key="ExecuteTranslation">執行翻譯</sys:String>
     <sys:String x:Key="AutoBackTranslation">自動回譯</sys:String>

@@ -70,6 +70,52 @@ public class Main : IVocabularyPlugin
         return result;
     }
 
+    public async Task<VocabularyResult> SaveWithNoteAsync(string word, string note, CancellationToken cancellationToken)
+    {
+        var result = new VocabularyResult();
+        var startTime = DateTime.Now;
+        try
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(Settings.BookID, "BookId不可为空");
+            ArgumentException.ThrowIfNullOrWhiteSpace(Settings.Token, "Token不可为空");
+
+            var option = new Options
+            {
+                Headers = new Dictionary<string, string> { { "Authorization", Settings.Token } }
+            };
+
+            // Step 1: 添加单词到生词本
+            const string wordUrl = "https://api.frdic.com/api/open/v1/studylist/word";
+            var wordContent = new { language = "en", word, category_ids = new[] { Settings.BookID } };
+            var wordResp = await Context.HttpService.PostAsync(wordUrl, wordContent, option, cancellationToken);
+            GetResult(wordResp);
+
+            // Step 2: 添加笔记
+            if (!string.IsNullOrWhiteSpace(note))
+            {
+                const string noteUrl = "https://api.frdic.com/api/open/v1/studylist/note";
+                var noteContent = new { language = "en", word, note };
+                var noteResp = await Context.HttpService.PostAsync(noteUrl, noteContent, option, cancellationToken);
+                GetResult(noteResp);
+            }
+            result.IsSuccess = true;
+        }
+        catch (OperationCanceledException)
+        {
+            result.Fail($"{Settings.BookName}保存已取消");
+        }
+        catch (Exception ex)
+        {
+            result.Fail($"{Settings.BookName}保存失败: {ex.Message}");
+            Context.Logger.LogError(ex, $"{Settings.BookName}保存至生词本失败");
+        }
+        finally
+        {
+            result.Duration = DateTime.Now - startTime;
+        }
+        return result;
+    }
+
     private static bool GetResult(string json)
     {
         using var document = JsonDocument.Parse(json);

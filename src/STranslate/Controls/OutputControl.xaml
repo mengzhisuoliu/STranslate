@@ -701,6 +701,12 @@
                                         Icon="{x:Static ui:FluentSystemIcons.FlashAuto_20_Regular}"
                                         ToolTip="{DynamicResource BackTranslation}"
                                         Visibility="{Binding Options.AutoBackTranslation, Converter={cnvt:BoolToVisibilityConverter}}" />
+                                    <control:IconButton
+                                        Command="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=SaveToVocabularyWithNoteCommand}"
+                                        CommandParameter="{Binding}"
+                                        Icon="{x:Static ui:FluentSystemIcons.BookAdd_20_Regular}"
+                                        ToolTip="{DynamicResource SaveToVocabularyWithNote}"
+                                        Visibility="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=HasActivedVocabulary, Converter={cnvt:BoolToVisibilityConverter}}" />
                                 </StackPanel>
                             </ikw:SimpleStackPanel>
                         </Grid>

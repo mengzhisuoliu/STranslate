@@ -911,6 +911,34 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
             _snackbar.ShowError(_i18n.GetTranslation("OperationFailed"));
     }
 
+    [RelayCommand(IncludeCancelCommand = true)]
+    private async Task SaveToVocabularyWithNoteAsync(Service service, CancellationToken cancellationToken)
+    {
+        var vocabularySvc = VocabularyService.GetActiveSvc<IVocabularyPlugin>();
+        if (vocabularySvc == null) return;
+
+        if (service.Plugin is not ITranslatePlugin plugin || plugin.TransResult.IsProcessing)
+            return;
+
+        var word = InputText;
+        var note = plugin.TransResult.IsSuccess ? plugin.TransResult.Text : string.Empty;
+
+        if (string.IsNullOrWhiteSpace(word))
+        {
+            _snackbar.ShowWarning(_i18n.GetTranslation("InputContentIsEmpty"));
+            return;
+        }
+
+        var result = await vocabularySvc.SaveWithNoteAsync(word, note, cancellationToken);
+        if (cancellationToken.IsCancellationRequested) return;
+        if (result.IsSuccess)
+            _snackbar.ShowSuccess(_i18n.GetTranslation("OperationSuccess"));
+        else if (!string.IsNullOrWhiteSpace(result.ErrorMessage))
+            _snackbar.ShowError(result.ErrorMessage);
+        else
+            _snackbar.ShowError(_i18n.GetTranslation("OperationFailed"));
+    }
+
     #endregion
 
     #region History Commands

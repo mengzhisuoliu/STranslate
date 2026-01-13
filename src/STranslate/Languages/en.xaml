@@ -346,6 +346,7 @@
     <sys:String x:Key="CopyAsSnakeCase">Copy as snake_case</sys:String>
     <sys:String x:Key="InsertText">Insert Text</sys:String>
     <sys:String x:Key="BackTranslation">Back Translation</sys:String>
+    <sys:String x:Key="SaveToVocabularyWithNote">Save to Vocabulary with Note</sys:String>
 
     <sys:String x:Key="ExecuteTranslation">Execute Translation</sys:String>
     <sys:String x:Key="AutoBackTranslation">Auto Trans Back</sys:String>

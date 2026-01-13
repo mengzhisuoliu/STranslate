@@ -12,6 +12,14 @@ public interface IVocabularyPlugin : IPlugin
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<VocabularyResult> SaveAsync(string text, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 保存生词并附带笔记
+    /// </summary>
+    Task<VocabularyResult> SaveWithNoteAsync(string word, string note, CancellationToken cancellationToken = default)
+    {
+        return SaveAsync(word, cancellationToken);
+    }
 }
 
 /// <summary>

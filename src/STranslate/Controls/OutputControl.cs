@@ -234,4 +234,21 @@ public class OutputControl : ItemsControl
             typeof(OutputControl),
             new PropertyMetadata(true));
 
+    public ICommand? SaveToVocabularyWithNoteCommand
+    {
+        get => (ICommand?)GetValue(SaveToVocabularyWithNoteCommandProperty);
+        set => SetValue(SaveToVocabularyWithNoteCommandProperty, value);
+    }
+
+    public static readonly DependencyProperty SaveToVocabularyWithNoteCommandProperty =
+        DependencyProperty.Register(nameof(SaveToVocabularyWithNoteCommand), typeof(ICommand), typeof(OutputControl));
+
+    public bool HasActivedVocabulary
+    {
+        get => (bool)GetValue(HasActivedVocabularyProperty);
+        set => SetValue(HasActivedVocabularyProperty, value);
+    }
+
+    public static readonly DependencyProperty HasActivedVocabularyProperty =
+        DependencyProperty.Register(nameof(HasActivedVocabulary), typeof(bool), typeof(OutputControl), new PropertyMetadata(false));
 }

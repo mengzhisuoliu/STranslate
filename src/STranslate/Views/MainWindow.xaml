@@ -266,7 +266,9 @@
                     ShowPascalCase="{Binding Settings.ShowPascalCase}"
                     ShowPrompt="{Binding Settings.ShowPromptButton}"
                     ShowSnakeCase="{Binding Settings.ShowSnakeCase}"
-                    TransBackCommand="{Binding SingleTransBackCommand}" />
+                    TransBackCommand="{Binding SingleTransBackCommand}"
+                    HasActivedVocabulary="{Binding VocabularyService.HasActivedVocabulary}"
+                    SaveToVocabularyWithNoteCommand="{Binding SaveToVocabularyWithNoteCommand}" />
             </StackPanel>
         </ui:ScrollViewerEx>
 
