@@ -193,6 +193,17 @@ public partial class OcrWindowViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void SwitchImage() => Settings.IsOcrShowingAnnotated = !Settings.IsOcrShowingAnnotated;
 
+    [RelayCommand]
+    private async Task OcrAsync(Window? window)
+    {
+        window?.Hide();
+        
+        await Task.Delay(150);
+
+        await _mainWindowViewModel.OcrCommand.ExecuteAsync(null);
+        window?.Show();
+    }
+
     public void QrCode(Bitmap bitmap)
     {
         Clear();

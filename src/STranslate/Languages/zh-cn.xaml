@@ -579,6 +579,8 @@
     <sys:String x:Key="ShowText">显示文字</sys:String>
     <sys:String x:Key="HideText">隐藏文字</sys:String>
     <sys:String x:Key="Recognize">识别</sys:String>
+    <sys:String x:Key="ReOcr">重新截图进行OCR</sys:String>
+    <sys:String x:Key="ReOcrKeepWindow">保留窗口截图</sys:String>
     <sys:String x:Key="RecognizeQrCode">识别二维码</sys:String>
     <sys:String x:Key="NoQrCodeFound">​​未找到二维码</sys:String>
     <sys:String x:Key="NoLocationInfoTitle">无位置信息</sys:String>
