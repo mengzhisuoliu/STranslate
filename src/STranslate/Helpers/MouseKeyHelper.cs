@@ -1,5 +1,4 @@
 using Gma.System.MouseKeyHook;
-using STranslate.Core;
 
 namespace STranslate.Helpers;
 

@@ -90,7 +90,6 @@ public static class GlobalKeyboardHelper
         _keyStates[key] = true;
 
         KeyDown?.Invoke(key);
-        System.Diagnostics.Debug.WriteLine($"[GlobalKeyboardHelper] 按键按下: {key}");
     }
 
     private static void OnKeyUp(object? sender, System.Windows.Forms.KeyEventArgs e)
@@ -99,11 +98,7 @@ public static class GlobalKeyboardHelper
 
         // 检查是否需要忽略此次 KeyUp
         if (_ignoredKeyUps.Remove(key))
-        {
-            // 仍然更新状态，但不触发事件
-            System.Diagnostics.Debug.WriteLine($"[GlobalKeyboardHelper] 忽略按键: {key}");
             return;
-        }
 
         // 如果这个键已经处于松开状态,则忽略重复的KeyUp事件
         if (_keyStates.TryGetValue(key, out var pressed) && !pressed)
@@ -112,7 +107,6 @@ public static class GlobalKeyboardHelper
         _keyStates[key] = false;
 
         KeyUp?.Invoke(key);
-        System.Diagnostics.Debug.WriteLine($"[GlobalKeyboardHelper] 按键抬起: {key}");
     }
 
     private static Key ConvertKey(System.Windows.Forms.Keys winFormsKey)

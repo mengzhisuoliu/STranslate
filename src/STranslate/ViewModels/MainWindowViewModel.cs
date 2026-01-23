@@ -87,7 +87,6 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
         if (key == Key.LeftCtrl)
         {
             IsMouseHook = true;
-            System.Diagnostics.Debug.WriteLine("[MainViewModel] 开始监听...");
         }
     }
 
@@ -96,7 +95,6 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
         if (key == Key.LeftCtrl)
         {
             IsMouseHook = false;
-            System.Diagnostics.Debug.WriteLine("[MainViewModel] 结束监听...");
         }
     }
 
