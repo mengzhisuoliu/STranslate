@@ -8,6 +8,7 @@
     <Style TargetType="{x:Type control:HotkeyDisplay}">
         <Setter Property="FontWeight" Value="Bold" />
         <Setter Property="Width" Value="Auto" />
+        <Setter Property="Background" Value="{DynamicResource {x:Static ui:ThemeKeys.AccentFillColorDisabledBrushKey}}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type control:HotkeyDisplay}">
@@ -37,7 +38,7 @@
                                     <Border BorderThickness="1" CornerRadius="5">
                                         <Border.Style>
                                             <Style TargetType="Border">
-                                                <Setter Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}" />
+                                                <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource AncestorType=control:HotkeyDisplay}, Path=Background}" />
                                                 <Setter Property="Padding" Value="10,5" />
                                                 <Setter Property="Margin" Value="2,5" />
                                                 <Style.Triggers>

@@ -1122,6 +1122,13 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
         }
     }
 
+    public void CrosswordTranslateByCtrlSameCHandler()
+    {
+        var text = ClipboardHelper.GetText();
+        if (string.IsNullOrWhiteSpace(text)) return;
+        ExecuteTranslate(Utilities.LinebreakHandler(text, Settings.LineBreakHandleType));
+    }
+
     [RelayCommand(IncludeCancelCommand = true)]
     private async Task ReplaceTranslateAsync(CancellationToken cancellationToken)
     {

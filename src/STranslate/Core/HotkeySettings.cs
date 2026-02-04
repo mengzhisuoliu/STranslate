@@ -15,6 +15,8 @@ public partial class HotkeySettings : ObservableObject
     private AppStorage<HotkeySettings> Storage { get; set; } = null!;
     private MainWindowViewModel MainWindowViewModel { get; set; } = null!;
 
+    [ObservableProperty] public partial bool CrosswordTranslateByCtrlSameC { get; set; } = false;
+
     [ObservableProperty] public partial Key IncrementalTranslateKey { get; set; } = Key.None;
 
     #region Setting Items
@@ -143,6 +145,11 @@ public partial class HotkeySettings : ObservableObject
                 ApplyIncrementalTranslate();
                 Save();
             }
+            else if (e.PropertyName == nameof(CrosswordTranslateByCtrlSameC))
+            {
+                ApplyCtrlCc();
+                Save();
+            }
         };
 
         // 自动监听所有 GlobalHotkey 类型的属性
@@ -154,13 +161,9 @@ public partial class HotkeySettings : ObservableObject
                     continue;
 
                 if (hotkey is GlobalHotkey)
-                {
                     SubscribeHotkeyPropertyChanged(hotkey, prop.Name);
-                }
                 else
-                {
                     SubscribeHotkeyPropertyChanged(hotkey);
-                }
             }
         }
     }
@@ -212,6 +215,7 @@ public partial class HotkeySettings : ObservableObject
     {
         MainWindowViewModel = Ioc.Default.GetRequiredService<MainWindowViewModel>();
 
+        ApplyCtrlCc(isInitial: true);
         ApplyIncrementalTranslate();
 
         if (!Ioc.Default.GetRequiredService<Settings>().DisableGlobalHotkeys)
@@ -234,6 +238,18 @@ public partial class HotkeySettings : ObservableObject
                 MainWindowViewModel.OnIncKeyReleased);
             HotkeyMapper.StartGlobalKeyboardMonitoring();
         }
+    }
+
+    private void ApplyCtrlCc(bool isInitial = false)
+    {
+        if (isInitial)
+            CtrlSameCHelper.OnCtrlSameC +=
+                MainWindowViewModel.CrosswordTranslateByCtrlSameCHandler;
+
+        if (CrosswordTranslateByCtrlSameC)
+            CtrlSameCHelper.Start();
+        else
+            CtrlSameCHelper.Stop();
     }
 
     public void ApplyGlobalHotkeys()
@@ -331,7 +347,14 @@ public partial class HotkeySettings : ObservableObject
                 InputTranslateHotkey.IsConflict = !HotkeyMapper.SetHotkey(InputTranslateHotkey.Key, WithFullscreenCheck(() => MainWindowViewModel.InputClearCommand.Execute(null)));
                 break;
             case nameof(CrosswordTranslateHotkey):
-                CrosswordTranslateHotkey.IsConflict = !HotkeyMapper.SetHotkey(CrosswordTranslateHotkey.Key, WithFullscreenCheck(() => MainWindowViewModel.CrosswordTranslateCommand.Execute(null)));
+                CrosswordTranslateHotkey.IsConflict = !HotkeyMapper.SetHotkey(CrosswordTranslateHotkey.Key, WithFullscreenCheck(() =>
+                {
+                    // 如果启用了 Ctrl+C+C，则不允许使用此快捷键
+                    if (CrosswordTranslateByCtrlSameC)
+                        return;
+
+                    MainWindowViewModel.CrosswordTranslateCommand.Execute(null);
+                }));
                 break;
             case nameof(MouseHookTranslateHotkey):
                 MouseHookTranslateHotkey.IsConflict = !HotkeyMapper.SetHotkey(MouseHookTranslateHotkey.Key, WithFullscreenCheck(() => MainWindowViewModel.ToggleMouseHookTranslateCommand.Execute(null)));

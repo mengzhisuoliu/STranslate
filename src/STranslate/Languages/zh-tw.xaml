@@ -121,6 +121,9 @@
     <sys:String x:Key="Hotkey_InputTranslateDescription">開啟STranslate並清空內容等待輸入翻譯的快速鍵。</sys:String>
     <sys:String x:Key="Hotkey_CrosswordTranslate">劃詞翻譯</sys:String>
     <sys:String x:Key="Hotkey_CrosswordTranslateDescription">滑鼠選中文字觸發翻譯的快速鍵。</sys:String>
+    <sys:String x:Key="Hotkey_CrosswordTranslateIsUseCtrlSameC">是否使用 Ctrl+C+C 進行劃詞翻譯？</sys:String>
+    <sys:String x:Key="Hotkey_CrosswordTranslateTraditional">傳統快速鍵</sys:String>
+    <sys:String x:Key="Hotkey_CrosswordTranslateByCtrlSameCDescription">滑鼠選中文字快速按下 Ctrl+C+C 進行取詞翻譯。</sys:String>
     <sys:String x:Key="Hotkey_MouseHookTranslate">監聽滑鼠劃詞</sys:String>
     <sys:String x:Key="Hotkey_MouseHookTranslateDescription">開啟/關閉監聽滑鼠劃詞選中文字觸發翻譯的快速鍵。</sys:String>
     <sys:String x:Key="Hotkey_ReplaceTranslate">替換翻譯</sys:String>
