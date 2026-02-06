@@ -258,6 +258,11 @@
     <sys:String x:Key="Total">共</sys:String>
     <sys:String x:Key="Item">項</sys:String>
     <sys:String x:Key="HistorySearch">請輸入或按 Ctrl+F搜尋紀錄</sys:String>
+    <sys:String x:Key="ExportHistory">匯出紀錄</sys:String>
+    <sys:String x:Key="HistorySelectAllOrClear">全選/取消</sys:String>
+    <sys:String x:Key="NoHistorySelected">尚未選擇任何紀錄</sys:String>
+    <sys:String x:Key="ExportSuccess">匯出成功</sys:String>
+    <sys:String x:Key="ExportFailed">匯出失敗</sys:String>
 
     <!--  // About Page //  -->
     <sys:String x:Key="UserDataLocation">使用者資料位置</sys:String>

@@ -258,6 +258,11 @@
     <sys:String x:Key="Total">Total</sys:String>
     <sys:String x:Key="Item">item</sys:String>
     <sys:String x:Key="HistorySearch">Input/Ctrl+F to search histories</sys:String>
+    <sys:String x:Key="ExportHistory">Export History</sys:String>
+    <sys:String x:Key="HistorySelectAllOrClear">Select All / Clear</sys:String>
+    <sys:String x:Key="NoHistorySelected">No history selected</sys:String>
+    <sys:String x:Key="ExportSuccess">Export succeeded</sys:String>
+    <sys:String x:Key="ExportFailed">Export failed</sys:String>
 
     <!--  // About Page //  -->
     <sys:String x:Key="UserDataLocation">User Data Location</sys:String>

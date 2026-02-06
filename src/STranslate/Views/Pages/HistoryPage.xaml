@@ -35,6 +35,17 @@
                 Margin="10,0,0,0"
                 Command="{Binding RefreshCommand}"
                 Icon="{x:Static ui:FluentSystemIcons.ArrowSync_20_Regular}" />
+            <control:IconButton
+                Margin="10,0,0,0"
+                Command="{Binding ToggleSelectAllCommand}"
+                Icon="{x:Static ui:FluentSystemIcons.SelectAllOn_20_Regular}"
+                ToolTip="{DynamicResource HistorySelectAllOrClear}" />
+            <control:IconButton
+                Margin="10,0,0,0"
+                Command="{Binding ExportHistoryCommand}"
+                Icon="{x:Static ui:FluentSystemIcons.ArrowExport_20_Regular}"
+                IsEnabled="{Binding CanExportHistory}"
+                ToolTip="{DynamicResource ExportHistory}" />
         </DockPanel>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -61,7 +72,7 @@
                     control:ListBoxScrollBehavior.ScrollAtBottomCommand="{Binding LoadMoreCommand}"
                     Background="Transparent"
                     ItemsSource="{Binding HistoryItems}"
-                    SelectedItem="{Binding SelectedItem}">
+                    SelectedItem="{Binding SelectedListItem}">
                     <ListBox.ItemContainerStyle>
                         <Style BasedOn="{StaticResource {x:Type ListBoxItem}}" TargetType="ListBoxItem">
                             <Setter Property="Height" Value="40" />
@@ -73,13 +84,18 @@
 
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Grid>
+                            <DockPanel LastChildFill="True">
+                                <CheckBox
+                                    DockPanel.Dock="Left"
+                                    MinWidth="0"
+                                    VerticalAlignment="Center"
+                                    IsChecked="{Binding IsExportSelected, Mode=TwoWay}" />
                                 <TextBlock
                                     VerticalAlignment="Center"
-                                    Text="{Binding SourceText}"
+                                    Text="{Binding Model.SourceText}"
                                     TextTrimming="CharacterEllipsis"
                                     TextWrapping="NoWrap" />
-                            </Grid>
+                            </DockPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>

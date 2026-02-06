@@ -1,9 +1,14 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Win32;
 using ObservableCollections;
 using STranslate.Core;
 using STranslate.Helpers;
 using STranslate.Plugin;
+using System.ComponentModel;
+using System.IO;
+using System.Text;
+using System.Text.Json;
 
 namespace STranslate.ViewModels.Pages;
 
@@ -31,13 +36,19 @@ public partial class HistoryViewModel : ObservableObject, IDisposable
     /// <summary>
     /// <see href="https://blog.coldwind.top/posts/more-observable-collections/"/>
     /// </summary>
-    private readonly ObservableList<HistoryModel> _items = [];
+    private readonly ObservableList<HistoryListItem> _items = [];
 
-    public INotifyCollectionChangedSynchronizedViewList<HistoryModel> HistoryItems { get; }
+    public INotifyCollectionChangedSynchronizedViewList<HistoryListItem> HistoryItems { get; }
+
+    [ObservableProperty] public partial HistoryListItem? SelectedListItem { get; set; }
 
     [ObservableProperty] public partial HistoryModel? SelectedItem { get; set; }
 
     [ObservableProperty] public partial long TotalCount { get; set; }
+
+    [ObservableProperty] public partial int ExportSelectedCount { get; set; }
+
+    [ObservableProperty] public partial bool CanExportHistory { get; set; }
 
     public HistoryViewModel(
         SqlService sqlService,
@@ -53,6 +64,8 @@ public partial class HistoryViewModel : ObservableObject, IDisposable
 
         _ = RefreshAsync();
     }
+
+    partial void OnSelectedListItemChanged(HistoryListItem? value) => SelectedItem = value?.Model;
 
     // 搜索文本变化时修改定时器
     partial void OnSearchTextChanged(string value) =>
@@ -74,10 +87,12 @@ public partial class HistoryViewModel : ObservableObject, IDisposable
 
         App.Current.Dispatcher.Invoke(() =>
         {
-            _items.Clear();
+            SelectedListItem = null;
+            SelectedItem = null;
+            ClearItems();
             if (historyItems == null) return;
 
-            _items.AddRange(historyItems);
+            AddItems(historyItems);
         });
     }
 
@@ -86,7 +101,12 @@ public partial class HistoryViewModel : ObservableObject, IDisposable
     {
         TotalCount = await _sqlService.GetCountAsync();
 
-        App.Current.Dispatcher.Invoke(() => _items.Clear());
+        App.Current.Dispatcher.Invoke(() =>
+        {
+            SelectedListItem = null;
+            SelectedItem = null;
+            ClearItems();
+        });
         _lastCursorTime = DateTime.Now;
 
         await LoadMoreAsync();
@@ -98,7 +118,17 @@ public partial class HistoryViewModel : ObservableObject, IDisposable
         var success = await _sqlService.DeleteDataAsync(historyModel);
         if (success)
         {
-            App.Current.Dispatcher.Invoke(() => _items.Remove(historyModel));
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                var item = _items.FirstOrDefault(i => i.Model.Id == historyModel.Id);
+                if (item != null)
+                    RemoveItem(item);
+                if (SelectedItem?.Id == historyModel.Id)
+                {
+                    SelectedListItem = null;
+                    SelectedItem = null;
+                }
+            });
             TotalCount--;
         }
         else
@@ -127,8 +157,8 @@ public partial class HistoryViewModel : ObservableObject, IDisposable
             {
                 // 更新游标
                 _lastCursorTime = historyData.Last().Time;
-                var uniqueHistoryItems = historyData.Where(h => !_items.Any(existing => existing.Id == h.Id));
-                _items.AddRange(uniqueHistoryItems);
+                var uniqueHistoryItems = historyData.Where(h => !_items.Any(existing => existing.Model.Id == h.Id));
+                AddItems(uniqueHistoryItems);
             });
         }
         finally
@@ -138,9 +168,132 @@ public partial class HistoryViewModel : ObservableObject, IDisposable
         }
     }
 
+    [RelayCommand]
+    private void ToggleSelectAll()
+    {
+        if (_items.Count == 0) return;
+
+        var shouldSelectAll = _items.Any(i => !i.IsExportSelected);
+        foreach (var item in _items)
+            item.IsExportSelected = shouldSelectAll;
+
+        UpdateExportSelectionState();
+    }
+
+    [RelayCommand]
+    private async Task ExportHistoryAsync()
+    {
+        var selected = _items
+            .Where(i => i.IsExportSelected)
+            .Select(i => i.Model)
+            .ToList();
+
+        if (selected.Count == 0)
+        {
+            _snackbar.Show(
+                _i18n.GetTranslation("NoHistorySelected"),
+                Severity.Warning,
+                actionText: _i18n.GetTranslation("SelectAll"),
+                actionCallback: ToggleSelectAll);
+            return;
+        }
+
+        var saveFileDialog = new SaveFileDialog
+        {
+            Title = _i18n.GetTranslation("SaveAs"),
+            Filter = "JSON Files (*.json)|*.json|All Files (*.*)|*.*",
+            FileName = $"stranslate_history_{DateTime.Now:yyyyMMddHHmmss}.json",
+            DefaultDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+            AddToRecent = true
+        };
+
+        if (saveFileDialog.ShowDialog() != true)
+            return;
+
+        try
+        {
+            var export = new
+            {
+                app = Constant.AppName,
+                exportedAt = DateTimeOffset.Now,
+                count = selected.Count,
+                items = selected.Select(h => new
+                {
+                    id = h.Id,
+                    time = h.Time,
+                    sourceLang = h.SourceLang,
+                    targetLang = h.TargetLang,
+                    sourceText = h.SourceText,
+                    favorite = h.Favorite,
+                    remark = h.Remark,
+                    data = h.Data
+                })
+            };
+
+            var json = JsonSerializer.Serialize(export, HistoryModel.JsonOption);
+            await File.WriteAllTextAsync(saveFileDialog.FileName, json, Encoding.UTF8);
+
+            var directory = Path.GetDirectoryName(saveFileDialog.FileName);
+            _snackbar.ShowSuccess(_i18n.GetTranslation("ExportSuccess"));
+
+            foreach (var item in _items)
+                item.IsExportSelected = false;
+            UpdateExportSelectionState();
+        }
+        catch (Exception ex)
+        {
+            _snackbar.ShowError($"{_i18n.GetTranslation("ExportFailed")}: {ex.Message}");
+        }
+    }
+
+    private void AddItems(IEnumerable<HistoryModel> models)
+    {
+        var listItems = models.Select(m => new HistoryListItem(m)).ToList();
+        foreach (var item in listItems)
+            item.PropertyChanged += OnHistoryListItemPropertyChanged;
+        _items.AddRange(listItems);
+        UpdateExportSelectionState();
+    }
+
+    private void RemoveItem(HistoryListItem item)
+    {
+        item.PropertyChanged -= OnHistoryListItemPropertyChanged;
+        _items.Remove(item);
+        UpdateExportSelectionState();
+    }
+
+    private void ClearItems()
+    {
+        foreach (var item in _items)
+            item.PropertyChanged -= OnHistoryListItemPropertyChanged;
+        _items.Clear();
+        UpdateExportSelectionState();
+    }
+
+    private void OnHistoryListItemPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(HistoryListItem.IsExportSelected))
+            UpdateExportSelectionState();
+    }
+
+    private void UpdateExportSelectionState()
+    {
+        ExportSelectedCount = _items.Count(i => i.IsExportSelected);
+        CanExportHistory = ExportSelectedCount > 0;
+    }
+
     public void Dispose()
     {
         _searchDebouncer.Dispose();
         _searchCts?.Dispose();
     }
+}
+
+public partial class HistoryListItem : ObservableObject
+{
+    public HistoryModel Model { get; }
+
+    [ObservableProperty] public partial bool IsExportSelected { get; set; }
+
+    public HistoryListItem(HistoryModel model) => Model = model;
 }

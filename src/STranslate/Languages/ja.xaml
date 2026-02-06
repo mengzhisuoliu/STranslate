@@ -249,6 +249,11 @@
     <sys:String x:Key="Total">計</sys:String>
     <sys:String x:Key="Item">件</sys:String>
     <sys:String x:Key="HistorySearch">入力または Ctrl+F で履歴を検索</sys:String>
+    <sys:String x:Key="ExportHistory">履歴をエクスポート</sys:String>
+    <sys:String x:Key="HistorySelectAllOrClear">すべて選択/解除</sys:String>
+    <sys:String x:Key="NoHistorySelected">履歴が選択されていません</sys:String>
+    <sys:String x:Key="ExportSuccess">エクスポート成功</sys:String>
+    <sys:String x:Key="ExportFailed">エクスポート失敗</sys:String>
 
     <sys:String x:Key="UserDataLocation">ユーザーデータの場所</sys:String>
     <sys:String x:Key="UserDataLocationDescription">ユーザー設定とインストール済みプラグインはユーザーデータフォルダに保存されます。この場所はポータブルモードかどうかによって異なる場合があります。</sys:String>
