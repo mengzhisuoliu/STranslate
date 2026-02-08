@@ -29,32 +29,51 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <DockPanel Margin="0,0,0,12">
+        <DockPanel Margin="0,0,0,12" LastChildFill="False">
+            <!--  标题  -->
             <TextBlock
+                VerticalAlignment="Center"
                 DockPanel.Dock="Left"
                 Style="{DynamicResource {x:Static ui:ThemeKeys.SubtitleTextBlockStyleKey}}"
                 Text="{DynamicResource History}" />
-            <control:IconButton
-                Margin="10,0,0,0"
-                Command="{Binding RefreshCommand}"
-                Icon="{x:Static ui:FluentSystemIcons.ArrowSync_20_Regular}" />
-            <control:IconButton
-                Margin="10,0,0,0"
-                Command="{Binding ToggleSelectAllCommand}"
-                Icon="{x:Static ui:FluentSystemIcons.SelectAllOn_20_Regular}"
-                ToolTip="{DynamicResource HistorySelectAllOrClear}" />
-            <control:IconButton
-                Margin="10,0,0,0"
-                Command="{Binding DeleteSelectedHistoryCommand}"
-                Icon="{x:Static ui:FluentSystemIcons.Delete_20_Regular}"
-                IsEnabled="{Binding CanExportHistory}"
-                ToolTip="{DynamicResource BatchDeleteHistory}" />
-            <control:IconButton
-                Margin="10,0,0,0"
-                Command="{Binding ExportHistoryCommand}"
-                Icon="{x:Static ui:FluentSystemIcons.ArrowExport_20_Regular}"
-                IsEnabled="{Binding CanExportHistory}"
-                ToolTip="{DynamicResource ExportHistory}" />
+
+            <!--  命令区域  -->
+            <Border
+                Margin="12,0,0,0"
+                Padding="4"
+                Background="{DynamicResource {x:Static ui:ThemeKeys.ControlFillColorSecondaryBrushKey}}"
+                CornerRadius="4"
+                DockPanel.Dock="Left">
+                <StackPanel Orientation="Horizontal">
+                    <control:IconButton
+                        Command="{Binding RefreshCommand}"
+                        Icon="{x:Static ui:FluentSystemIcons.ArrowSync_20_Regular}"
+                        ToolTip="{DynamicResource Refresh}" />
+                    <control:IconButton
+                        Margin="4,0,0,0"
+                        Command="{Binding ToggleSelectAllCommand}"
+                        Icon="{x:Static ui:FluentSystemIcons.SelectAllOn_20_Regular}"
+                        ToolTip="{DynamicResource HistorySelectAllOrClear}" />
+                    <!--  分隔线  -->
+                    <Rectangle
+                        Width="1"
+                        Height="20"
+                        Margin="8,0"
+                        VerticalAlignment="Center"
+                        Fill="{DynamicResource {x:Static ui:ThemeKeys.ControlStrokeColorDefaultBrushKey}}" />
+                    <control:IconButton
+                        Command="{Binding DeleteSelectedHistoryCommand}"
+                        Icon="{x:Static ui:FluentSystemIcons.Delete_20_Regular}"
+                        IsEnabled="{Binding CanExportHistory}"
+                        ToolTip="{DynamicResource BatchDeleteHistory}" />
+                    <control:IconButton
+                        Margin="4,0,0,0"
+                        Command="{Binding ExportHistoryCommand}"
+                        Icon="{x:Static ui:FluentSystemIcons.ArrowExport_20_Regular}"
+                        IsEnabled="{Binding CanExportHistory}"
+                        ToolTip="{DynamicResource ExportHistory}" />
+                </StackPanel>
+            </Border>
         </DockPanel>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
