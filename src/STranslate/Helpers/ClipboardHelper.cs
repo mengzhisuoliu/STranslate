@@ -40,10 +40,10 @@ public class ClipboardHelper
     /// <summary>
     ///     获取当前选中的文本。
     /// </summary>
-    /// <param name="timeout">超时时间（以毫秒为单位），默认2000ms</param>
+    /// <param name="timeout">超时时间（以毫秒为单位），默认500ms</param>
     /// <param name="cancellation">可以用来取消工作的取消标记</param>
     /// <returns>返回当前选中的文本。</returns>
-    public static async Task<string?> GetSelectedTextAsync(int timeout = 2000, CancellationToken cancellation = default)
+    public static async Task<string?> GetSelectedTextAsync(int timeout = 500, CancellationToken cancellation = default)
     {
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellation);
         cts.CancelAfter(timeout);
@@ -63,7 +63,7 @@ public class ClipboardHelper
     /// </summary>
     /// <param name="timeout">超时时间（毫秒）</param>
     /// <returns>返回当前选中的文本</returns>
-    private static async Task<string?> GetSelectedTextImplAsync(int timeout = 2000)
+    private static async Task<string?> GetSelectedTextImplAsync(int timeout = 500)
     {
         var originalText = GetText();
         uint originalSequence = PInvoke.GetClipboardSequenceNumber();

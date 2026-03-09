@@ -1148,18 +1148,29 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private async Task CrosswordTranslateAsync()
     {
-        var (success, text) = await GetTextAsync();
-        if (success && !string.IsNullOrWhiteSpace(text))
+        var (success, text) = await GetTextAsync(showFailureNotification: false);
+        if (!success || string.IsNullOrWhiteSpace(text))
         {
-            ExecuteTranslate(Utilities.LinebreakHandler(text, Settings.LineBreakHandleType));
+            HandleCrosswordFetchFailed();
+            return;
         }
+
+        ExecuteTranslate(Utilities.LinebreakHandler(text, Settings.LineBreakHandleType));
     }
 
     public void CrosswordTranslateByCtrlSameCHandler()
     {
-        var text = ClipboardHelper.GetText()?.Trim();
-        if (string.IsNullOrWhiteSpace(text)) return;
-        ExecuteTranslate(Utilities.LinebreakHandler(text, Settings.LineBreakHandleType));
+        _ = Application.Current.Dispatcher.InvokeAsync(() =>
+        {
+            var text = ClipboardHelper.GetText()?.Trim();
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                HandleCrosswordFetchFailed();
+                return;
+            }
+
+            ExecuteTranslate(Utilities.LinebreakHandler(text, Settings.LineBreakHandleType));
+        });
     }
 
     [RelayCommand]
@@ -1779,7 +1790,7 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
         SaveToVocabularyCancelCommand.Execute(null);
     }
 
-    private async Task<(bool success, string text)> GetTextAsync()
+    private async Task<(bool success, string text)> GetTextAsync(bool showFailureNotification = true)
     {
         try
         {
@@ -1787,7 +1798,10 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
             if (string.IsNullOrEmpty(text))
             {
                 _logger.LogWarning("取词失败，可能：未选中文本、文本禁止复制、取词间隔过短、文本所属软件权限高于本软件");
-                _notification.Show("未识别到文本", "请确保选中要翻译的文本\n若问题仍然存在请尝试以管理员权限重启软件");
+                if (showFailureNotification)
+                {
+                    _notification.Show("未识别到文本", "请确保选中要翻译的文本\n若问题仍然存在请尝试以管理员权限重启软件");
+                }
                 return (false, string.Empty);
             }
             return (true, text);
@@ -1797,6 +1811,12 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
             _logger.LogError(ex, "获取剪贴板异常请重试");
             return (false, string.Empty);
         }
+    }
+
+    private void HandleCrosswordFetchFailed()
+    {
+        InputClear();
+        _snackbar.ShowWarning(_i18n.GetTranslation("CrosswordTranslateFetchFailed"), 3000);
     }
 
     private void StartProcess()
