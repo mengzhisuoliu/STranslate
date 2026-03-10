@@ -246,7 +246,7 @@ public class ExternalCallService(
     /// <returns></returns>
     private ExternalCallAction GetExternalCallAction(string source)
     {
-        return Enum.TryParse<ExternalCallAction>(source, out var eAction)
+        return Enum.TryParse<ExternalCallAction>(source, true, out var eAction)
             ? eAction
             : throw new Exception("path does not meet the requirements");
     }
