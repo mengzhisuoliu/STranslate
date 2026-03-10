@@ -324,6 +324,16 @@
     <sys:String x:Key="UserDataLocation">User Data Location</sys:String>
     <sys:String x:Key="UserDataLocationDescription">User settings and installed plugins are saved in the user data folder. This location may vary depending on whether it is in portable mode.</sys:String>
     <sys:String x:Key="OpenDirectory">Open Directory</sys:String>
+    <sys:String x:Key="EnablePortableMode">Enable Portable Mode</sys:String>
+    <sys:String x:Key="DisablePortableMode">Disable Portable Mode</sys:String>
+    <sys:String x:Key="ConfirmRestartAndEnablePortableMode">Confirm restart and enable portable mode?</sys:String>
+    <sys:String x:Key="ConfirmRestartAndDisablePortableMode">Confirm restart and disable portable mode?</sys:String>
+    <sys:String x:Key="PortableModeDisableRoamingConflict">Roaming data directory already exists. Please handle it manually and try again.</sys:String>
+    <sys:String x:Key="PortableModeEnableSuccess">Portable mode enabled successfully</sys:String>
+    <sys:String x:Key="PortableModeDisableSuccess">Portable mode disabled. Roaming mode restored.</sys:String>
+    <sys:String x:Key="PortableModeEnableFailed">Failed to enable portable mode</sys:String>
+    <sys:String x:Key="PortableModeDisableFailed">Failed to disable portable mode</sys:String>
+    <sys:String x:Key="PortableModeHostStartFailed">Failed to start portable mode operation: {0}</sys:String>
     <sys:String x:Key="DeveloperTools">Developer Tools</sys:String>
     <sys:String x:Key="ClearCache">Clear Cache</sys:String>
     <sys:String x:Key="ClearLogs">Clear Logs</sys:String>

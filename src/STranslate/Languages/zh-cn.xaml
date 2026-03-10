@@ -324,6 +324,16 @@
     <sys:String x:Key="UserDataLocation">用户数据位置</sys:String>
     <sys:String x:Key="UserDataLocationDescription">用户设置和已安装的插件保存在用户数据文件夹中。此位置可能因是否处于便携模式而异。</sys:String>
     <sys:String x:Key="OpenDirectory">打开目录</sys:String>
+    <sys:String x:Key="EnablePortableMode">启用便携模式</sys:String>
+    <sys:String x:Key="DisablePortableMode">关闭便携模式</sys:String>
+    <sys:String x:Key="ConfirmRestartAndEnablePortableMode">是否确认重启并启用便携模式</sys:String>
+    <sys:String x:Key="ConfirmRestartAndDisablePortableMode">是否确认重启并关闭便携模式</sys:String>
+    <sys:String x:Key="PortableModeDisableRoamingConflict">检测到漫游目录已存在，请先手动处理后再重试</sys:String>
+    <sys:String x:Key="PortableModeEnableSuccess">便携模式启用成功</sys:String>
+    <sys:String x:Key="PortableModeDisableSuccess">便携模式已关闭，已恢复漫游模式</sys:String>
+    <sys:String x:Key="PortableModeEnableFailed">便携模式启用失败</sys:String>
+    <sys:String x:Key="PortableModeDisableFailed">便携模式关闭失败</sys:String>
+    <sys:String x:Key="PortableModeHostStartFailed">便携模式操作启动失败：{0}</sys:String>
     <sys:String x:Key="DeveloperTools">开发工具</sys:String>
     <sys:String x:Key="ClearCache">清理缓存</sys:String>
     <sys:String x:Key="ClearLogs">清理日志</sys:String>

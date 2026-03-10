@@ -36,7 +36,17 @@
                     <ui:SettingsCard.HeaderIcon>
                         <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.FolderPerson_24_Regular}" />
                     </ui:SettingsCard.HeaderIcon>
-                    <Button Command="{Binding LocateUserDataCommand}" Content="{DynamicResource OpenDirectory}" />
+                    <ikw:SimpleStackPanel Orientation="Horizontal" Spacing="12">
+                        <Button Command="{Binding LocateUserDataCommand}" Content="{DynamicResource OpenDirectory}" />
+                        <Button
+                            Command="{Binding TogglePortableModeCommand}"
+                            Content="{DynamicResource EnablePortableMode}"
+                            Visibility="{Binding IsPortableMode, Converter={cnvt:BoolToVisibilityInverseConverter}}" />
+                        <Button
+                            Command="{Binding TogglePortableModeCommand}"
+                            Content="{DynamicResource DisablePortableMode}"
+                            Visibility="{Binding IsPortableMode, Converter={cnvt:BoolToVisibilityConverter}}" />
+                    </ikw:SimpleStackPanel>
                 </ui:SettingsCard>
 
                 <ui:SettingsCard Header="{DynamicResource DeveloperTools}">
