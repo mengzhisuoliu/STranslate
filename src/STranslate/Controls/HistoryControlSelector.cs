@@ -1,6 +1,4 @@
-using CommunityToolkit.Mvvm.DependencyInjection;
 using STranslate.Core;
-using STranslate.Plugin;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -17,18 +15,12 @@ public class HistoryControlSelector : DataTemplateSelector
         if (item is not HistoryData data)
             return base.SelectTemplate(item, container);
 
-        var svcMgr = Ioc.Default.GetRequiredService<ServiceManager>();
+        if (data.DictResult != null)
+            return DictionaryTemplate ?? base.SelectTemplate(item, container);
 
-        //TODO: 考虑显示“插件未安装”之类的信息
-        if (svcMgr.AllServices.FirstOrDefault(x => x.MetaData.PluginID == data.PluginID && x.ServiceID == data.ServiceID)
-                is not Service service)
-            return base.SelectTemplate(item, container);
+        if (data.TransResult != null || data.TransBackResult != null)
+            return TranslateTemplate ?? base.SelectTemplate(item, container);
 
-        return service.Plugin switch
-        {
-            IDictionaryPlugin => DictionaryTemplate,
-            ITranslatePlugin => TranslateTemplate,
-            _ => base.SelectTemplate(item, container),
-        };
+        return base.SelectTemplate(item, container);
     }
 }

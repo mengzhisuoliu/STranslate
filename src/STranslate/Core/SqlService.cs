@@ -561,6 +561,7 @@ public class HistoryData
 {
     public string PluginID { get; set; } = string.Empty;
     public string ServiceID { get; set; } = string.Empty;
+    public string? ServiceDisplayName { get; set; }
     public TranslateResult? TransResult { get; set; }
     public TranslateResult? TransBackResult { get; set; }
     public DictionaryResult? DictResult { get; set; }
@@ -573,6 +574,7 @@ public class HistoryData
     {
         PluginID = svc.MetaData.PluginID;
         ServiceID = svc.ServiceID;
+        ServiceDisplayName = svc.DisplayName;
     }
 }
 

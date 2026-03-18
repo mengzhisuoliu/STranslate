@@ -16,7 +16,6 @@ public partial class HistoryViewModel : ObservableObject, IDisposable
     private const int searchDelayMilliseconds = 500;
 
     private readonly SqlService _sqlService;
-    private readonly ServiceManager _serviceManager;
     private readonly ISnackbar _snackbar;
     private readonly Internationalization _i18n;
     private readonly DebounceExecutor _searchDebouncer;
@@ -51,12 +50,10 @@ public partial class HistoryViewModel : ObservableObject, IDisposable
 
     public HistoryViewModel(
         SqlService sqlService,
-        ServiceManager serviceManager,
         ISnackbar snackbar,
         Internationalization i18n)
     {
         _sqlService = sqlService;
-        _serviceManager = serviceManager;
         _snackbar = snackbar;
         _i18n = i18n;
         _searchDebouncer = new();
@@ -276,7 +273,7 @@ public partial class HistoryViewModel : ObservableObject, IDisposable
 
         try
         {
-            var csv = HistoryCsvHelper.BuildCsv(exportItems, _serviceManager.AllServices, GetLanguageDisplayName);
+            var csv = HistoryCsvHelper.BuildCsv(exportItems, GetLanguageDisplayName);
             await File.WriteAllTextAsync(saveFileDialog.FileName, csv, HistoryCsvHelper.Utf8BomEncoding);
 
             _snackbar.ShowSuccess(_i18n.GetTranslation("ExportSuccess"));

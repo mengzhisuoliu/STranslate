@@ -29,16 +29,33 @@
                         SnapsToDevicePixels="True"
                         Text="{Binding TransResult.Text}"
                         TextWrapping="Wrap" />
-                    <ikw:SimpleStackPanel
+                    <Grid
                         Grid.Row="1"
                         Margin="6,2"
-                        Orientation="Horizontal"
-                        Spacing="4">
+                        VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
                         <control:IconButton
                             Command="{Binding RelativeSource={RelativeSource AncestorType=ui:Page}, Path=DataContext.CopyCommand}"
                             CommandParameter="{Binding TransResult.Text}"
                             Icon="{x:Static ui:FluentSystemIcons.Copy_20_Regular}" />
-                    </ikw:SimpleStackPanel>
+                        <TextBlock
+                            Grid.Column="1"
+                            Margin="8,0,0,0"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            FontSize="{DynamicResource STControlFontSize12}"
+                            Opacity="0.7">
+                            <TextBlock.Text>
+                                <MultiBinding Converter="{cnvt:HistoryServiceDisplayNameConverter}">
+                                    <Binding Path="ServiceDisplayName" />
+                                    <Binding Path="ServiceID" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </Grid>
                 </Grid>
                 <ikw:SimpleStackPanel
                     x:Name="PART_TransBackPanel"
@@ -242,16 +259,33 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </StackPanel>
-                <ikw:SimpleStackPanel
+                <Grid
                     Grid.Row="1"
                     Margin="6,2"
-                    Orientation="Horizontal"
-                    Spacing="4">
+                    VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
                     <control:IconButton
                         Command="{Binding RelativeSource={RelativeSource AncestorType=ui:Page}, Path=DataContext.CopyCommand}"
                         CommandParameter="{Binding DictResult.Text}"
                         Icon="{x:Static ui:FluentSystemIcons.Copy_20_Regular}" />
-                </ikw:SimpleStackPanel>
+                    <TextBlock
+                        Grid.Column="1"
+                        Margin="8,0,0,0"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        FontSize="{DynamicResource STControlFontSize12}"
+                        Opacity="0.7">
+                        <TextBlock.Text>
+                            <MultiBinding Converter="{cnvt:HistoryServiceDisplayNameConverter}">
+                                <Binding Path="ServiceDisplayName" />
+                                <Binding Path="ServiceID" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </Grid>
             </Grid>
         </Border>
     </DataTemplate>
@@ -352,7 +386,14 @@
                                     </Style>
                                 </Grid.Resources>
                                 <Border>
-                                    <TextBlock Text="{Binding SourceLang, Converter={cnvt:LangEnumToStringConverter}}" />
+                                    <TextBlock>
+                                        <TextBlock.Text>
+                                            <MultiBinding Converter="{cnvt:HistoryLanguageDisplayConverter}">
+                                                <Binding Path="SourceLang" />
+                                                <Binding Path="EffectiveSourceLang" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
                                 </Border>
                                 <TextBlock
                                     Grid.Column="1"
@@ -362,7 +403,14 @@
                                     FontWeight="Medium"
                                     Text="&#xE32B;" />
                                 <Border Grid.Column="2">
-                                    <TextBlock Text="{Binding TargetLang, Converter={cnvt:LangEnumToStringConverter}}" />
+                                    <TextBlock>
+                                        <TextBlock.Text>
+                                            <MultiBinding Converter="{cnvt:HistoryLanguageDisplayConverter}">
+                                                <Binding Path="TargetLang" />
+                                                <Binding Path="EffectiveTargetLang" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
                                 </Border>
                             </Grid>
                             <ItemsControl

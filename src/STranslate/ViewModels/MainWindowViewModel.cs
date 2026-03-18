@@ -302,6 +302,7 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
             historyData = new HistoryData(service);
             history.Data.Add(historyData);
         }
+        UpdateHistoryServiceSnapshot(historyData, service);
         historyData.TransResult = translateResult;
 
         if (service.Options?.AutoBackTranslation ?? false)
@@ -337,7 +338,12 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
         if (!plugin.TransResult.IsSuccess)
             return;
 
-        history?.GetData(service)?.TransBackResult = backResult;
+        var historyData = history?.GetData(service);
+        if (historyData != null)
+        {
+            UpdateHistoryServiceSnapshot(historyData, service);
+            historyData.TransBackResult = backResult;
+        }
 
         if (Settings.HistoryLimit > 0 && history != null)
             await _sqlService.InsertOrUpdateDataAsync(history, (long)Settings.HistoryLimit).ConfigureAwait(false);
@@ -410,6 +416,14 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
     {
         history.EffectiveSourceLang = source.ToString();
         history.EffectiveTargetLang = target.ToString();
+    }
+
+    /// <summary>
+    /// 统一维护历史记录里的服务名称快照，确保历史展示和导出不依赖当前服务配置。
+    /// </summary>
+    private static void UpdateHistoryServiceSnapshot(HistoryData historyData, Service service)
+    {
+        historyData.ServiceDisplayName = service.DisplayName;
     }
 
     /// <summary>
@@ -528,6 +542,7 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
         // 添加新的历史数据记录
         var historyData = new HistoryData(service);
         history.Data.Add(historyData);
+        UpdateHistoryServiceSnapshot(historyData, service);
         historyData.TransResult = translateResult;
 
         // 执行反向翻译（如果需要且主翻译成功）
@@ -546,7 +561,11 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
             return;
 
         var historyData = history.GetData(service);
-        historyData?.TransBackResult = backResult;
+        if (historyData != null)
+        {
+            UpdateHistoryServiceSnapshot(historyData, service);
+            historyData.TransBackResult = backResult;
+        }
     }
 
     private async Task ProcessDictionaryPluginAsync(Service service, IDictionaryPlugin plugin,
@@ -563,6 +582,7 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
         // 添加新的历史数据记录并执行字典查询
         var historyData = new HistoryData(service);
         history.Data.Add(historyData);
+        UpdateHistoryServiceSnapshot(historyData, service);
         historyData.DictResult = result;
     }
 
