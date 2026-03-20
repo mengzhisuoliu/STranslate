@@ -326,6 +326,7 @@ public class HttpService : IHttpService
         catch (OperationCanceledException)
         {
             _logger?.LogInformation("Stream POST request was canceled for URL: {Url}, Service: {ServiceName}", url, serviceName);
+            throw;
         }
         catch (Exception ex)
         {
