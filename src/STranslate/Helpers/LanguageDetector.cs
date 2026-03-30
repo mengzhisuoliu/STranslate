@@ -69,7 +69,7 @@ public class LanguageDetector
         {
             LanguageDetectorType.Local => LocalLangDetect(text, rate),
             LanguageDetectorType.Baidu => await BaiduLangDetectAsync(text, token).ConfigureAwait(false),
-            LanguageDetectorType.Tencent => await TencentLangDetectAsync(text, token).ConfigureAwait(false),
+            //LanguageDetectorType.Tencent => await TencentLangDetectAsync(text, token).ConfigureAwait(false),
             LanguageDetectorType.Niutrans => await NiutransLangDetectAsync(text, token).ConfigureAwait(false),
             LanguageDetectorType.Bing => await BingLangDetectAsync(text, token).ConfigureAwait(false),
             LanguageDetectorType.Yandex => await YandexLangDetectAsync(text, token).ConfigureAwait(false),
@@ -153,6 +153,7 @@ public class LanguageDetector
     /// <param name="text"></param>
     /// <param name="token"></param>
     /// <returns></returns>
+    [Obsolete("官方已停止服务，弃用")]
     private static async Task<LangEnum> TencentLangDetectAsync(string text, CancellationToken token = default)
     {
         if (string.IsNullOrWhiteSpace(text))

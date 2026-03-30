@@ -709,7 +709,12 @@ public enum LanguageDetectorType
 {
     Local,
     Baidu,
-    Tencent,
+
+    /// <summary>
+    /// 官方停止服务，弃用
+    /// </summary>
+    //Tencent,
+
     Niutrans,
     Bing,
     Yandex,
