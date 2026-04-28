@@ -5,11 +5,19 @@ using STranslate.ViewModels;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Threading;
+using Windows.Win32;
+using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace STranslate.Views;
 
 public partial class MainWindow : IDisposable
 {
+    private const int WmNcHitTest = 0x0084;
+
+    private static readonly IntPtr HtClient = new(1);
+    private static readonly IntPtr HtLeft = new(10);
+    private static readonly IntPtr HtRight = new(11);
+
     private readonly MainWindowViewModel _viewModel;
     private readonly Settings _settings;
     private bool _disposed = false;
@@ -75,8 +83,66 @@ public partial class MainWindow : IDisposable
         {
             Dispatcher.BeginInvoke(RefreshNotifyIcon, DispatcherPriority.Loaded);
         }
+
+        if (msg == WmNcHitTest && TryHandleHorizontalResizeHitTest(lParam, out var hitTestResult))
+        {
+            handled = true;
+            return hitTestResult;
+        }
+
         return IntPtr.Zero;
     }
+
+    private bool TryHandleHorizontalResizeHitTest(IntPtr lParam, out IntPtr hitTestResult)
+    {
+        hitTestResult = IntPtr.Zero;
+
+        var hwnd = Win32Helper.GetWindowHandle(this);
+        if (!PInvoke.GetWindowRect(hwnd, out var windowRect))
+            return false;
+
+        var cursorX = GetSignedLowWord(lParam);
+        var cursorY = GetSignedHighWord(lParam);
+        var resizeBorder = GetResizeBorderThickness();
+
+        var isLeftBorder = cursorX >= windowRect.left && cursorX < windowRect.left + resizeBorder.Width;
+        var isRightBorder = cursorX <= windowRect.right && cursorX > windowRect.right - resizeBorder.Width;
+        if (isLeftBorder)
+        {
+            hitTestResult = HtLeft;
+            return true;
+        }
+
+        if (isRightBorder)
+        {
+            hitTestResult = HtRight;
+            return true;
+        }
+
+        var isTopBorder = cursorY >= windowRect.top && cursorY < windowRect.top + resizeBorder.Height;
+        var isBottomBorder = cursorY <= windowRect.bottom && cursorY > windowRect.bottom - resizeBorder.Height;
+        if (isTopBorder || isBottomBorder)
+        {
+            // 高度交给 SizeToContent 跟随内容变化，边缘命中退回 client 可阻止手动纵向 resize。
+            hitTestResult = HtClient;
+            return true;
+        }
+
+        return false;
+    }
+
+    private static Size GetResizeBorderThickness()
+    {
+        var paddedBorder = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXPADDEDBORDER);
+        var width = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXSIZEFRAME) + paddedBorder;
+        var height = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYSIZEFRAME) + paddedBorder;
+
+        return new Size(Math.Max(1, width), Math.Max(1, height));
+    }
+
+    private static int GetSignedLowWord(IntPtr value) => unchecked((short)((long)value & 0xffff));
+
+    private static int GetSignedHighWord(IntPtr value) => unchecked((short)(((long)value >> 16) & 0xffff));
 
     private void RefreshNotifyIcon()
     {
