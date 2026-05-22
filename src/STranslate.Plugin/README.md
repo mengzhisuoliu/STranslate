@@ -1,5 +1,9 @@
 Reference this package to develop a plugin for [STranslate](https://github.com/STranslate/STranslate).
 
+## v1.0.11 - 2026-05-22
+
+- LangEnum 添加乌兹别克语 感谢 @boxi-wangji #704
+
 ## v1.0.10 - 2026-03-30
 
 - IHttpService 添加 StreamPostAsyncEnumerable 方法 感谢 @SwiftFloatFlow #672
