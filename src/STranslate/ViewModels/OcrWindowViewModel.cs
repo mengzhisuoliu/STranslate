@@ -86,6 +86,7 @@ public partial class OcrWindowViewModel : ObservableObject, IDisposable
     private readonly INotification _notification;
     private const double WidthMultiplier = 2;
     private const double WidthAdjustment = 12;
+    private bool _hasShownNoLocationInfoForSelectedEngine;
 
     [ObservableProperty]
     public partial bool IsExecuting { get; set; } = false;
@@ -163,12 +164,18 @@ public partial class OcrWindowViewModel : ObservableObject, IDisposable
             {
                 _snackbar.ShowWarning(_i18n.GetTranslation("OcrFailed"));
                 _logger.LogError("OCR failed: {ErrorMessage}", _lastOcrResult.ErrorMessage);
+                return;
             }
 
             if (Settings.CopyAfterOcr)
                 ClipboardHelper.SetText(_lastOcrResult.Text);
 
-            IsNoLocationInfoVisible = !Utilities.HasBoxPoints(_lastOcrResult);
+            var hasBoxPoints = Utilities.HasBoxPoints(_lastOcrResult);
+            IsNoLocationInfoVisible = !hasBoxPoints && !_hasShownNoLocationInfoForSelectedEngine;
+            if (IsNoLocationInfoVisible)
+            {
+                _hasShownNoLocationInfoForSelectedEngine = true;
+            }
 
             _annotatedImage = GenerateAnnotatedImage(_lastOcrResult, _sourceImage);
             PopulateOcrWords(_lastOcrResult);
@@ -499,6 +506,12 @@ public partial class OcrWindowViewModel : ObservableObject, IDisposable
     /// </summary>
     partial void OnSelectedOcrEngineChanged(Service? oldValue, Service? newValue)
     {
+        if (oldValue != newValue)
+        {
+            _hasShownNoLocationInfoForSelectedEngine = false;
+            IsNoLocationInfoVisible = false;
+        }
+
         // 禁用旧的引擎
         if (oldValue != null && oldValue.IsEnabled)
         {
