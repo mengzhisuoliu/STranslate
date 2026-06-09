@@ -42,12 +42,25 @@
             <RowDefinition Height="64" />
         </Grid.RowDefinitions>
 
-        <Border Background="{DynamicResource SystemControlBackgroundAccentBrush}">
+        <Border
+            ClipToBounds="True"
+            Background="{DynamicResource {x:Static ui:ThemeKeys.CardBackgroundFillColorDefaultBrushKey}}"
+            BorderBrush="{DynamicResource {x:Static ui:ThemeKeys.CardStrokeColorDefaultBrushKey}}"
+            BorderThickness="0,0,0,1">
             <Grid Margin="32,18">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
+
+                <control:STranslateBadge
+                    Grid.ColumnSpan="2"
+                    Width="180"
+                    Height="180"
+                    Margin="0,0,-42,-28"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    IsHitTestVisible="False" />
 
                 <Image
                     Width="72"
@@ -63,13 +76,19 @@
                     <TextBlock
                         FontSize="32"
                         FontWeight="SemiBold"
-                        Foreground="{DynamicResource {x:Static ui:ThemeKeys.TextOnAccentFillColorPrimaryBrushKey}}"
+                        Foreground="{DynamicResource {x:Static ui:ThemeKeys.TextFillColorPrimaryBrushKey}}"
                         Text="STranslate" />
                     <TextBlock
                         FontSize="{DynamicResource STControlFontSize14}"
-                        Foreground="{DynamicResource {x:Static ui:ThemeKeys.TextOnAccentFillColorSecondaryBrushKey}}"
+                        Foreground="{DynamicResource {x:Static ui:ThemeKeys.TextFillColorSecondaryBrushKey}}"
                         Text="{DynamicResource WelcomeSetup_Subtitle}"
                         TextWrapping="Wrap" />
+                    <Border
+                        Width="42"
+                        Height="3"
+                        HorizontalAlignment="Left"
+                        Background="{DynamicResource {x:Static ui:ThemeKeys.AccentTextFillColorPrimaryBrushKey}}"
+                        CornerRadius="2" />
                 </ikw:SimpleStackPanel>
             </Grid>
         </Border>
