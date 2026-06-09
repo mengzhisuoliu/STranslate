@@ -24,7 +24,7 @@
     Closing="OnClosing"
     Icon="/Resources/app.ico"
     ResizeMode="NoResize"
-    ShowInTaskbar="False"
+    ShowInTaskbar="True"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
 
@@ -43,10 +43,10 @@
         </Grid.RowDefinitions>
 
         <Border
-            ClipToBounds="True"
             Background="{DynamicResource {x:Static ui:ThemeKeys.CardBackgroundFillColorDefaultBrushKey}}"
             BorderBrush="{DynamicResource {x:Static ui:ThemeKeys.CardStrokeColorDefaultBrushKey}}"
-            BorderThickness="0,0,0,1">
+            BorderThickness="0,0,0,1"
+            ClipToBounds="True">
             <Grid Margin="32,18">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -96,8 +96,8 @@
         <Grid Grid.Row="1" Margin="24,22,24,0">
             <ui:ScrollViewerEx
                 xf:Animations.Primary="{xf:Animate BasedOn={StaticResource FadeInAndSlideFromRight},
-                                                    Event=Visibility,
-                                                    Duration=250}"
+                                                   Event=Visibility,
+                                                   Duration=250}"
                 VerticalScrollBarVisibility="Auto"
                 Visibility="{Binding SelectedStepIndex, Converter={cnvt:EqualToVisibilityConverter}, ConverterParameter=0}">
                 <ikw:SimpleStackPanel Spacing="18">
@@ -137,8 +137,8 @@
 
             <ui:ScrollViewerEx
                 xf:Animations.Primary="{xf:Animate BasedOn={StaticResource FadeInAndSlideFromRight},
-                                                    Event=Visibility,
-                                                    Duration=250}"
+                                                   Event=Visibility,
+                                                   Duration=250}"
                 VerticalScrollBarVisibility="Auto"
                 Visibility="{Binding SelectedStepIndex, Converter={cnvt:EqualToVisibilityConverter}, ConverterParameter=1}">
                 <ikw:SimpleStackPanel Spacing="8">
@@ -189,8 +189,8 @@
 
             <ui:ScrollViewerEx
                 xf:Animations.Primary="{xf:Animate BasedOn={StaticResource FadeInAndSlideFromRight},
-                                                    Event=Visibility,
-                                                    Duration=250}"
+                                                   Event=Visibility,
+                                                   Duration=250}"
                 VerticalScrollBarVisibility="Auto"
                 Visibility="{Binding SelectedStepIndex, Converter={cnvt:EqualToVisibilityConverter}, ConverterParameter=2}">
                 <ikw:SimpleStackPanel Spacing="8">
@@ -279,8 +279,8 @@
 
             <ui:ScrollViewerEx
                 xf:Animations.Primary="{xf:Animate BasedOn={StaticResource FadeInAndSlideFromRight},
-                                                    Event=Visibility,
-                                                    Duration=250}"
+                                                   Event=Visibility,
+                                                   Duration=250}"
                 VerticalScrollBarVisibility="Auto"
                 Visibility="{Binding SelectedStepIndex, Converter={cnvt:EqualToVisibilityConverter}, ConverterParameter=3}">
                 <ikw:SimpleStackPanel Spacing="8">
@@ -326,8 +326,8 @@
 
             <ui:ScrollViewerEx
                 xf:Animations.Primary="{xf:Animate BasedOn={StaticResource FadeInAndSlideFromRight},
-                                                    Event=Visibility,
-                                                    Duration=250}"
+                                                   Event=Visibility,
+                                                   Duration=250}"
                 VerticalScrollBarVisibility="Auto"
                 Visibility="{Binding SelectedStepIndex, Converter={cnvt:EqualToVisibilityConverter}, ConverterParameter=4}">
                 <ikw:SimpleStackPanel Spacing="8">
