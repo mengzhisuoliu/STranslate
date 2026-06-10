@@ -147,43 +147,46 @@
                         Style="{DynamicResource {x:Static ui:ThemeKeys.SubtitleTextBlockStyleKey}}"
                         Text="{DynamicResource WelcomeSetup_TranslateServices}" />
 
-                    <ui:SettingsExpander Header="{DynamicResource Translate}" IsExpanded="True">
-                        <ui:SettingsExpander.HeaderIcon>
-                            <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.Translate_24_Regular}" />
-                        </ui:SettingsExpander.HeaderIcon>
-                        <ikw:SimpleStackPanel Orientation="Horizontal" Spacing="8">
-                            <ComboBox
-                                Width="230"
-                                DisplayMemberPath="Name"
-                                ItemsSource="{Binding WelcomeTranslatePlugins}"
-                                SelectedItem="{Binding SelectedTranslatePlugin}" />
-                            <Button Command="{Binding AddTranslateServiceCommand}" IsEnabled="{Binding SelectedTranslatePlugin, Converter={cnvt:NullToBoolInverseConverter}}">
-                                <ui:IconAndText Content="{DynamicResource Add}" Icon="{x:Static ui:FluentSystemIcons.Add_20_Regular}" />
-                            </Button>
-                        </ikw:SimpleStackPanel>
-
-                        <ui:SettingsExpander.Items>
-                            <ui:SettingsCard Description="{DynamicResource WelcomeSetup_SelectServiceDescription}" Header="{DynamicResource WelcomeSetup_SelectService}">
+                    <control:CardGroup>
+                        <ui:SettingsCard Header="{DynamicResource Translate}">
+                            <ui:SettingsCard.HeaderIcon>
+                                <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.Translate_24_Regular}" />
+                            </ui:SettingsCard.HeaderIcon>
+                            <ikw:SimpleStackPanel Orientation="Horizontal" Spacing="8">
                                 <ComboBox
                                     Width="230"
-                                    DisplayMemberPath="DisplayName"
-                                    ItemsSource="{Binding TranslateService.Services}"
-                                    SelectedItem="{Binding SelectedTranslateService}" />
-                            </ui:SettingsCard>
-                            <ui:SettingsCard Header="{DynamicResource Enable}">
-                                <ui:ToggleSwitch
-                                    IsEnabled="{Binding SelectedTranslateService, Converter={cnvt:NullToBoolInverseConverter}}"
-                                    IsOn="{Binding SelectedTranslateService.IsEnabled}"
-                                    OffContent="{DynamicResource Disable}"
-                                    OnContent="{DynamicResource Enable}" />
-                            </ui:SettingsCard>
-                            <ui:SettingsCard Header="{DynamicResource ConfigureService}">
-                                <ui:ScrollViewerEx MaxHeight="230" VerticalScrollBarVisibility="Auto">
-                                    <ContentControl Content="{Binding TranslateSettingUI}" />
-                                </ui:ScrollViewerEx>
-                            </ui:SettingsCard>
-                        </ui:SettingsExpander.Items>
-                    </ui:SettingsExpander>
+                                    DisplayMemberPath="Name"
+                                    ItemsSource="{Binding WelcomeTranslatePlugins}"
+                                    SelectedItem="{Binding SelectedTranslatePlugin}" />
+                                <Button Command="{Binding AddTranslateServiceCommand}" IsEnabled="{Binding SelectedTranslatePlugin, Converter={cnvt:NullToBoolInverseConverter}}">
+                                    <ui:IconAndText Content="{DynamicResource Add}" Icon="{x:Static ui:FluentSystemIcons.Add_20_Regular}" />
+                                </Button>
+                            </ikw:SimpleStackPanel>
+                        </ui:SettingsCard>
+
+                        <ui:SettingsCard Description="{DynamicResource WelcomeSetup_SelectServiceDescription}" Header="{DynamicResource WelcomeSetup_SelectService}">
+                            <ComboBox
+                                Width="230"
+                                DisplayMemberPath="DisplayName"
+                                ItemsSource="{Binding TranslateService.Services}"
+                                SelectedItem="{Binding SelectedTranslateService}" />
+                        </ui:SettingsCard>
+                        <ui:SettingsCard Header="{DynamicResource Enable}">
+                            <ui:ToggleSwitch
+                                IsEnabled="{Binding SelectedTranslateService, Converter={cnvt:NullToBoolInverseConverter}}"
+                                IsOn="{Binding SelectedTranslateService.IsEnabled}"
+                                OffContent="{DynamicResource Disable}"
+                                OnContent="{DynamicResource Enable}" />
+                        </ui:SettingsCard>
+                        <ui:SettingsCard
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch"
+                            Header="{DynamicResource ConfigureService}">
+                            <ui:ScrollViewerEx MaxHeight="230" VerticalScrollBarVisibility="Auto">
+                                <ContentControl Content="{Binding TranslateSettingUI}" />
+                            </ui:ScrollViewerEx>
+                        </ui:SettingsCard>
+                    </control:CardGroup>
                 </ikw:SimpleStackPanel>
             </ui:ScrollViewerEx>
 
@@ -199,81 +202,87 @@
                         Style="{DynamicResource {x:Static ui:ThemeKeys.SubtitleTextBlockStyleKey}}"
                         Text="{DynamicResource WelcomeSetup_OcrTtsServices}" />
 
-                    <ui:SettingsExpander Header="{DynamicResource Ocr}" IsExpanded="True">
-                        <ui:SettingsExpander.HeaderIcon>
-                            <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.ScanType_24_Regular}" />
-                        </ui:SettingsExpander.HeaderIcon>
-                        <ikw:SimpleStackPanel Orientation="Horizontal" Spacing="8">
-                            <ComboBox
-                                Width="230"
-                                DisplayMemberPath="Name"
-                                ItemsSource="{Binding WelcomeOcrPlugins}"
-                                SelectedItem="{Binding SelectedOcrPlugin}" />
-                            <Button Command="{Binding AddOcrServiceCommand}" IsEnabled="{Binding SelectedOcrPlugin, Converter={cnvt:NullToBoolInverseConverter}}">
-                                <ui:IconAndText Content="{DynamicResource Add}" Icon="{x:Static ui:FluentSystemIcons.Add_20_Regular}" />
-                            </Button>
-                        </ikw:SimpleStackPanel>
-
-                        <ui:SettingsExpander.Items>
-                            <ui:SettingsCard Description="{DynamicResource WelcomeSetup_SelectServiceDescription}" Header="{DynamicResource WelcomeSetup_SelectService}">
+                    <control:CardGroup>
+                        <ui:SettingsCard Header="{DynamicResource Ocr}">
+                            <ui:SettingsCard.HeaderIcon>
+                                <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.ScanType_24_Regular}" />
+                            </ui:SettingsCard.HeaderIcon>
+                            <ikw:SimpleStackPanel Orientation="Horizontal" Spacing="8">
                                 <ComboBox
                                     Width="230"
-                                    DisplayMemberPath="DisplayName"
-                                    ItemsSource="{Binding OcrService.Services}"
-                                    SelectedItem="{Binding SelectedOcrService}" />
-                            </ui:SettingsCard>
-                            <ui:SettingsCard Header="{DynamicResource Enable}">
-                                <ui:ToggleSwitch
-                                    IsEnabled="{Binding SelectedOcrService, Converter={cnvt:NullToBoolInverseConverter}}"
-                                    IsOn="{Binding SelectedOcrService.IsEnabled}"
-                                    OffContent="{DynamicResource Disable}"
-                                    OnContent="{DynamicResource Enable}" />
-                            </ui:SettingsCard>
-                            <ui:SettingsCard Header="{DynamicResource ConfigureService}">
-                                <ui:ScrollViewerEx MaxHeight="180" VerticalScrollBarVisibility="Auto">
-                                    <ContentControl Content="{Binding OcrSettingUI}" />
-                                </ui:ScrollViewerEx>
-                            </ui:SettingsCard>
-                        </ui:SettingsExpander.Items>
-                    </ui:SettingsExpander>
+                                    DisplayMemberPath="Name"
+                                    ItemsSource="{Binding WelcomeOcrPlugins}"
+                                    SelectedItem="{Binding SelectedOcrPlugin}" />
+                                <Button Command="{Binding AddOcrServiceCommand}" IsEnabled="{Binding SelectedOcrPlugin, Converter={cnvt:NullToBoolInverseConverter}}">
+                                    <ui:IconAndText Content="{DynamicResource Add}" Icon="{x:Static ui:FluentSystemIcons.Add_20_Regular}" />
+                                </Button>
+                            </ikw:SimpleStackPanel>
+                        </ui:SettingsCard>
 
-                    <ui:SettingsExpander Header="{DynamicResource Tts}" IsExpanded="True">
-                        <ui:SettingsExpander.HeaderIcon>
-                            <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.DesktopSpeaker_24_Regular}" />
-                        </ui:SettingsExpander.HeaderIcon>
-                        <ikw:SimpleStackPanel Orientation="Horizontal" Spacing="8">
+                        <ui:SettingsCard Description="{DynamicResource WelcomeSetup_SelectServiceDescription}" Header="{DynamicResource WelcomeSetup_SelectService}">
                             <ComboBox
                                 Width="230"
-                                DisplayMemberPath="Name"
-                                ItemsSource="{Binding WelcomeTtsPlugins}"
-                                SelectedItem="{Binding SelectedTtsPlugin}" />
-                            <Button Command="{Binding AddTtsServiceCommand}" IsEnabled="{Binding SelectedTtsPlugin, Converter={cnvt:NullToBoolInverseConverter}}">
-                                <ui:IconAndText Content="{DynamicResource Add}" Icon="{x:Static ui:FluentSystemIcons.Add_20_Regular}" />
-                            </Button>
-                        </ikw:SimpleStackPanel>
+                                DisplayMemberPath="DisplayName"
+                                ItemsSource="{Binding OcrService.Services}"
+                                SelectedItem="{Binding SelectedOcrService}" />
+                        </ui:SettingsCard>
+                        <ui:SettingsCard Header="{DynamicResource Enable}">
+                            <ui:ToggleSwitch
+                                IsEnabled="{Binding SelectedOcrService, Converter={cnvt:NullToBoolInverseConverter}}"
+                                IsOn="{Binding SelectedOcrService.IsEnabled}"
+                                OffContent="{DynamicResource Disable}"
+                                OnContent="{DynamicResource Enable}" />
+                        </ui:SettingsCard>
+                        <ui:SettingsCard
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch"
+                            Header="{DynamicResource ConfigureService}">
+                            <ui:ScrollViewerEx MaxHeight="180" VerticalScrollBarVisibility="Auto">
+                                <ContentControl Content="{Binding OcrSettingUI}" />
+                            </ui:ScrollViewerEx>
+                        </ui:SettingsCard>
+                    </control:CardGroup>
 
-                        <ui:SettingsExpander.Items>
-                            <ui:SettingsCard Description="{DynamicResource WelcomeSetup_SelectServiceDescription}" Header="{DynamicResource WelcomeSetup_SelectService}">
+                    <control:CardGroup>
+                        <ui:SettingsCard Header="{DynamicResource Tts}">
+                            <ui:SettingsCard.HeaderIcon>
+                                <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.DesktopSpeaker_24_Regular}" />
+                            </ui:SettingsCard.HeaderIcon>
+                            <ikw:SimpleStackPanel Orientation="Horizontal" Spacing="8">
                                 <ComboBox
                                     Width="230"
-                                    DisplayMemberPath="DisplayName"
-                                    ItemsSource="{Binding TtsService.Services}"
-                                    SelectedItem="{Binding SelectedTtsService}" />
-                            </ui:SettingsCard>
-                            <ui:SettingsCard Header="{DynamicResource Enable}">
-                                <ui:ToggleSwitch
-                                    IsEnabled="{Binding SelectedTtsService, Converter={cnvt:NullToBoolInverseConverter}}"
-                                    IsOn="{Binding SelectedTtsService.IsEnabled}"
-                                    OffContent="{DynamicResource Disable}"
-                                    OnContent="{DynamicResource Enable}" />
-                            </ui:SettingsCard>
-                            <ui:SettingsCard Header="{DynamicResource ConfigureService}">
-                                <ui:ScrollViewerEx MaxHeight="180" VerticalScrollBarVisibility="Auto">
-                                    <ContentControl Content="{Binding TtsSettingUI}" />
-                                </ui:ScrollViewerEx>
-                            </ui:SettingsCard>
-                        </ui:SettingsExpander.Items>
-                    </ui:SettingsExpander>
+                                    DisplayMemberPath="Name"
+                                    ItemsSource="{Binding WelcomeTtsPlugins}"
+                                    SelectedItem="{Binding SelectedTtsPlugin}" />
+                                <Button Command="{Binding AddTtsServiceCommand}" IsEnabled="{Binding SelectedTtsPlugin, Converter={cnvt:NullToBoolInverseConverter}}">
+                                    <ui:IconAndText Content="{DynamicResource Add}" Icon="{x:Static ui:FluentSystemIcons.Add_20_Regular}" />
+                                </Button>
+                            </ikw:SimpleStackPanel>
+                        </ui:SettingsCard>
+
+                        <ui:SettingsCard Description="{DynamicResource WelcomeSetup_SelectServiceDescription}" Header="{DynamicResource WelcomeSetup_SelectService}">
+                            <ComboBox
+                                Width="230"
+                                DisplayMemberPath="DisplayName"
+                                ItemsSource="{Binding TtsService.Services}"
+                                SelectedItem="{Binding SelectedTtsService}" />
+                        </ui:SettingsCard>
+                        <ui:SettingsCard Header="{DynamicResource Enable}">
+                            <ui:ToggleSwitch
+                                IsEnabled="{Binding SelectedTtsService, Converter={cnvt:NullToBoolInverseConverter}}"
+                                IsOn="{Binding SelectedTtsService.IsEnabled}"
+                                OffContent="{DynamicResource Disable}"
+                                OnContent="{DynamicResource Enable}" />
+                        </ui:SettingsCard>
+                        <ui:SettingsCard
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch"
+                            Header="{DynamicResource ConfigureService}">
+                            <ui:ScrollViewerEx MaxHeight="180" VerticalScrollBarVisibility="Auto">
+                                <ContentControl Content="{Binding TtsSettingUI}" />
+                            </ui:ScrollViewerEx>
+                        </ui:SettingsCard>
+                    </control:CardGroup>
                 </ikw:SimpleStackPanel>
             </ui:ScrollViewerEx>
 
