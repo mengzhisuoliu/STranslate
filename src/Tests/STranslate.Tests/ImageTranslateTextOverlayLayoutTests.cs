@@ -18,7 +18,7 @@ public class ImageTranslateTextOverlayLayoutTests
         var plan = CreatePlan(block, new Rect(0, 0, 1000, 150), (_, _) => new Size(20, 20));
 
         Assert.True(plan.IsMultiLine);
-        Assert.Equal(30 * 0.72, plan.FontSize, precision: 3);
+        Assert.Equal(30 * 0.90, plan.FontSize, precision: 3);
     }
 
     [Fact]
@@ -61,10 +61,10 @@ public class ImageTranslateTextOverlayLayoutTests
 
         var plan = CreatePlan(block, new Rect(10, 20, 200, 100), (_, _) => new Size(10, 10));
 
-        Assert.Equal(14, plan.TextRect.Left);
-        Assert.Equal(22, plan.TextRect.Top);
-        Assert.Equal(206, plan.TextRect.Right);
-        Assert.Equal(118, plan.TextRect.Bottom);
+        Assert.Equal(11, plan.TextRect.Left);
+        Assert.Equal(21, plan.TextRect.Top);
+        Assert.Equal(209, plan.TextRect.Right);
+        Assert.Equal(119, plan.TextRect.Bottom);
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class ImageTranslateTextOverlayLayoutTests
 
         Assert.False(plan.IsMultiLine);
         Assert.Equal(boundingRect, plan.EraseRects[0]);
-        Assert.Equal(30 * 0.82, plan.FontSize, precision: 3);
+        Assert.Equal(30 * 0.96, plan.FontSize, precision: 3);
     }
 
     private static ImageTranslateTextOverlayPlan CreatePlan(

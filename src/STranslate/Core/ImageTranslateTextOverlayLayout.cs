@@ -15,14 +15,14 @@ internal sealed record ImageTranslateTextOverlayPlan(
     Color BackgroundColor)
 {
     internal const double MinFontSize = 6;
-    internal const double MaxFontSize = 36;
+    internal const double MaxFontSize = 48;
 }
 
 internal static class ImageTranslateTextOverlayLayout
 {
-    private const double MultilineFontScale = 0.72;
-    private const double SingleLineFontScale = 0.82;
-    private const double HorizontalTextPadding = 4;
+    private const double MultilineFontScale = 0.90;
+    private const double SingleLineFontScale = 0.96;
+    private const double HorizontalTextPadding = 1;
 
     internal static ImageTranslateTextOverlayPlan Create(
         OcrLayoutBlock block,
@@ -38,7 +38,9 @@ internal static class ImageTranslateTextOverlayLayout
             ? Median(lineRects.Select(rect => rect.Height))
             : Math.Max(1, boundingRect.Height);
         var isMultiLine = lineRects.Count > 1;
-        var textVerticalPadding = Math.Max(2, lineHeight * 0.08);
+        var textVerticalPadding = isMultiLine
+            ? Math.Max(1, lineHeight * 0.03)
+            : 0;
         var textRect = CreatePaddedRect(
             boundingRect,
             HorizontalTextPadding,
