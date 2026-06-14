@@ -227,7 +227,8 @@ public partial class ImageTranslateWindowViewModel : ObservableObject, IDisposab
 
                 var result = new TranslateResult();
                 await tranSvc.TranslateAsync(new TranslateRequest(block.Text, source, target), result, cancellationToken);
-                block.Text = result.IsSuccess ? result.Text : block.Text;
+                if (result.IsSuccess && !string.IsNullOrWhiteSpace(result.Text))
+                    block.Text = result.Text;
             });
 
             _lastOcrResult.OcrContents.Clear();
@@ -708,142 +709,71 @@ public partial class ImageTranslateWindowViewModel : ObservableObject, IDisposab
     private void DrawTranslatedTextOverlay(DrawingContext drawingContext, OcrLayoutBlock content, double pixelsPerDip)
     {
         var boundingRect = CalculateBoundingRect(content.BoxPoints);
-
-        // 绘制白色背景覆盖原文
-        var backgroundBrush = new SolidColorBrush(Color.FromArgb(240, 255, 255, 255));
-        backgroundBrush.Freeze();
-
-        var eraseBoxes = content.LineBoxPoints.Count > 0
-            ? content.LineBoxPoints
-            : [content.BoxPoints];
-        foreach (var boxPoints in eraseBoxes)
-        {
-            if (boxPoints.Count == 0)
-                continue;
-
-            var eraseRect = CalculateBoundingRect(boxPoints);
-            var expandedRect = new Rect(
-                eraseRect.Left - 2,
-                eraseRect.Top - 2,
-                eraseRect.Width + 4,
-                eraseRect.Height + 4);
-            drawingContext.DrawRectangle(backgroundBrush, null, expandedRect);
-        }
-
-        // 创建并绘制适配的文本
         var textBrush = new SolidColorBrush(Colors.Black);
         textBrush.Freeze();
+        var plan = ImageTranslateTextOverlayLayout.Create(
+            content,
+            boundingRect,
+            (fontSize, textRect) => MeasureFormattedText(content.Text, fontSize, textRect.Width, textBrush, pixelsPerDip));
 
-        var formattedText = CreateOptimalText(content.Text, boundingRect, textBrush, pixelsPerDip);
+        var backgroundBrush = new SolidColorBrush(plan.BackgroundColor);
+        backgroundBrush.Freeze();
 
-        // 居中绘制文本
+        foreach (var eraseRect in plan.EraseRects)
+            drawingContext.DrawRectangle(backgroundBrush, null, eraseRect);
+
+        var formattedText = CreateFormattedText(
+            content.Text,
+            plan.FontSize,
+            textBrush,
+            plan.TextRect.Width,
+            plan.TextRect.Height,
+            plan.LineHeight,
+            plan.ShouldTrim,
+            pixelsPerDip);
+
         var textPosition = new Point(
-            Math.Max(boundingRect.Left + 4, boundingRect.Left + (boundingRect.Width - formattedText.Width) / 2),
-            Math.Max(boundingRect.Top + 4, boundingRect.Top + (boundingRect.Height - formattedText.Height) / 2)
+            plan.TextRect.Left,
+            plan.IsMultiLine
+                ? plan.TextRect.Top
+                : plan.TextRect.Top + Math.Max(0, (plan.TextRect.Height - formattedText.Height) / 2)
         );
 
+        drawingContext.PushClip(new RectangleGeometry(plan.BoundingRect));
         drawingContext.DrawText(formattedText, textPosition);
+        drawingContext.Pop();
     }
 
     /// <summary>
-    /// 创建适应区域的最优文本
+    /// 测量换行文本的实际占用尺寸。
     /// </summary>
-    /// <param name="text">文本内容</param>
-    /// <param name="boundingRect">目标区域</param>
-    /// <param name="textBrush">文本画刷</param>
-    /// <param name="pixelsPerDip">DPI缩放比例</param>
-    /// <returns>格式化文本</returns>
-    private FormattedText CreateOptimalText(string text, Rect boundingRect, Brush textBrush, double pixelsPerDip)
+    private Size MeasureFormattedText(string text, double fontSize, double maxWidth, Brush textBrush, double pixelsPerDip)
     {
-        const double minFontSize = 6;
-        const double maxFontSize = 48;
-        const double padding = 6;
+        var formattedText = CreateFormattedText(
+            text,
+            fontSize,
+            textBrush,
+            maxWidth,
+            double.PositiveInfinity,
+            fontSize * 1.28,
+            false,
+            pixelsPerDip);
 
-        var availableWidth = Math.Max(20, boundingRect.Width - padding);
-        var availableHeight = Math.Max(15, boundingRect.Height - padding);
-
-        // 快速估算初始字体大小
-        var estimatedFontSize = Math.Min(maxFontSize,
-            Math.Max(minFontSize, Math.Min(availableHeight * 0.7, availableWidth * 0.12)));
-
-        // 使用二分查找优化字体大小
-        var optimalSize = FindOptimalFontSize(text, estimatedFontSize, minFontSize, maxFontSize,
-            availableWidth, availableHeight, textBrush, pixelsPerDip);
-
-        var formattedText = CreateFormattedText(text, optimalSize, textBrush, availableWidth, pixelsPerDip);
-
-        // 如果文本仍然过大，进行截断处理
-        if (formattedText.Height > availableHeight)
-        {
-            var truncatedText = TruncateTextToFit(text, optimalSize, availableWidth, availableHeight, pixelsPerDip);
-            formattedText = CreateFormattedText(truncatedText, optimalSize, textBrush, availableWidth, pixelsPerDip);
-        }
-
-        return formattedText;
+        return new Size(formattedText.Width, formattedText.Height);
     }
 
     /// <summary>
-    /// 使用二分查找确定最优字体大小
+    /// 创建格式化文本对象。
     /// </summary>
-    private double FindOptimalFontSize(string text, double initialSize, double minSize, double maxSize,
-        double availableWidth, double availableHeight, Brush textBrush, double pixelsPerDip)
-    {
-        double bestSize = minSize;
-        double low = minSize;
-        double high = Math.Min(maxSize, initialSize);
-
-        while (high - low > 0.5)
-        {
-            var mid = (low + high) / 2;
-            var testText = CreateFormattedText(text, mid, textBrush, availableWidth, pixelsPerDip);
-
-            if (testText.Height <= availableHeight && testText.Width <= availableWidth)
-            {
-                bestSize = mid;
-                low = mid;
-            }
-            else
-            {
-                high = mid;
-            }
-        }
-
-        return bestSize;
-    }
-
-    /// <summary>
-    /// 截断文本以适应区域
-    /// </summary>
-    private string TruncateTextToFit(string text, double fontSize, double availableWidth, double availableHeight, double pixelsPerDip)
-    {
-        // 估算可容纳的字符数
-        var estimatedCharsPerLine = Math.Max(1, (int)(availableWidth / (fontSize * 0.6)));
-        var estimatedLines = Math.Max(1, (int)(availableHeight / (fontSize * 1.2)));
-        var maxChars = estimatedCharsPerLine * estimatedLines;
-
-        if (text.Length <= maxChars) return text;
-
-        // 逐步截断直到适合
-        var truncated = maxChars > 3 ? text.Substring(0, maxChars - 3) + "..." : text.Substring(0, Math.Min(text.Length, maxChars));
-
-        // 进一步验证和调整
-        while (truncated.Length > 4)
-        {
-            var testText = CreateFormattedText(truncated, fontSize, new SolidColorBrush(Colors.Black), availableWidth, pixelsPerDip);
-            if (testText.Height <= availableHeight) break;
-
-            truncated = truncated.Length > 6
-                ? truncated.Substring(0, truncated.Length - 4) + "..."
-                : truncated.Substring(0, Math.Max(1, truncated.Length - 1));
-        }
-
-        return truncated;
-    }
-
-    /// <summary>
-    /// 创建格式化文本对象
-    /// </summary>
-    private FormattedText CreateFormattedText(string text, double fontSize, Brush textBrush, double maxWidth, double pixelsPerDip)
+    private FormattedText CreateFormattedText(
+        string text,
+        double fontSize,
+        Brush textBrush,
+        double maxWidth,
+        double maxHeight,
+        double lineHeight,
+        bool shouldTrim,
+        double pixelsPerDip)
     {
         var formattedText = new FormattedText(
             text,
@@ -855,6 +785,11 @@ public partial class ImageTranslateWindowViewModel : ObservableObject, IDisposab
             pixelsPerDip); // 关键修复：使用正确的缩放比例，而不是硬编码的 96
 
         formattedText.MaxTextWidth = maxWidth;
+        if (!double.IsPositiveInfinity(maxHeight))
+            formattedText.MaxTextHeight = Math.Max(maxHeight, lineHeight);
+        formattedText.LineHeight = lineHeight;
+        formattedText.TextAlignment = TextAlignment.Left;
+        formattedText.Trimming = shouldTrim ? TextTrimming.CharacterEllipsis : TextTrimming.None;
         return formattedText;
     }
 
