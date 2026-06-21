@@ -120,8 +120,10 @@
             IsScreenshotTranslateVisible="{Binding Settings.IsScreenshotTranslateVisible}"
             IsTopmost="{Binding IsTopmost}"
             OcrCommand="{Binding OcrCommand}"
+            QuickServiceItems="{Binding QuickServiceItems}"
             ScreenshotTranslateCommand="{Binding ScreenshotTranslateCommand}"
             SettingCommand="{Binding OpenSettingsCommand}"
+            ToggleQuickServiceCommand="{Binding ToggleQuickServiceCommand}"
             VisibleActions="{Binding Settings.MainHeaderVisibleActions}" />
 
         <ui:ScrollViewerEx Margin="10,37,0,5">

@@ -11,6 +11,8 @@ using STranslate.Services;
 using STranslate.ViewModels.Pages;
 using STranslate.Views;
 using STranslate.Views.Pages;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows;
@@ -41,6 +43,7 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
     public OcrService OcrService { get; }
     public TtsService TtsService { get; }
     public VocabularyService VocabularyService { get; }
+    public ObservableCollection<ServiceQuickAccessItem> QuickServiceItems { get; } = [];
 
     private readonly SqlService _sqlService;
     private readonly DebounceExecutor _debounceExecutor;
@@ -89,6 +92,12 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
         Settings = settings;
         HotkeySettings = hotkeySettings;
 
+        TranslateService.Services.CollectionChanged += OnQuickServiceCollectionChanged;
+        OcrService.Services.CollectionChanged += OnQuickServiceCollectionChanged;
+        TtsService.Services.CollectionChanged += OnQuickServiceCollectionChanged;
+        VocabularyService.Services.CollectionChanged += OnQuickServiceCollectionChanged;
+        RebuildQuickServiceItems();
+
         _debounceExecutor = new();
         _i18n.OnLanguageChanged += OnLanguageChanged;
         Settings.PropertyChanged += OnSettingsPropertyChanged;
@@ -103,6 +112,42 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
 
         TrayToolTip = $"{Constant.AppName} # {_i18n.GetTranslation("Administrator")}";
     }
+
+    #endregion
+
+    #region Quick Service Switcher
+
+    private void OnQuickServiceCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        => RebuildQuickServiceItems();
+
+    private void RebuildQuickServiceItems()
+    {
+        QuickServiceItems.Clear();
+
+        var hasPreviousGroup = false;
+        AddQuickServiceGroup(TranslateService.Services, ref hasPreviousGroup);
+        AddQuickServiceGroup(OcrService.Services, ref hasPreviousGroup);
+        AddQuickServiceGroup(TtsService.Services, ref hasPreviousGroup);
+        AddQuickServiceGroup(VocabularyService.Services, ref hasPreviousGroup);
+    }
+
+    private void AddQuickServiceGroup(IEnumerable<Service> services, ref bool hasPreviousGroup)
+    {
+        var isFirstItem = true;
+        foreach (var service in services)
+        {
+            QuickServiceItems.Add(new ServiceQuickAccessItem(
+                service,
+                ShowSeparatorBefore: isFirstItem && hasPreviousGroup));
+            isFirstItem = false;
+        }
+
+        if (!isFirstItem)
+            hasPreviousGroup = true;
+    }
+
+    [RelayCommand]
+    private void ToggleQuickService(Service service) => service.IsEnabled = !service.IsEnabled;
 
     #endregion
 
@@ -2580,6 +2625,10 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
         MouseKeyHelper.MouseTextSelected -= OnMouseTextSelectedIncretemental;
         _clipboardMonitor?.OnClipboardTextChanged -= OnClipboardTextChanged;
         Settings.PropertyChanged -= OnSettingsPropertyChanged;
+        TranslateService.Services.CollectionChanged -= OnQuickServiceCollectionChanged;
+        OcrService.Services.CollectionChanged -= OnQuickServiceCollectionChanged;
+        TtsService.Services.CollectionChanged -= OnQuickServiceCollectionChanged;
+        VocabularyService.Services.CollectionChanged -= OnQuickServiceCollectionChanged;
 
         _debounceExecutor.Dispose();
         _clipboardMonitor?.Dispose();
@@ -2598,3 +2647,5 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
 
     #endregion
 }
+
+public sealed record ServiceQuickAccessItem(Service Service, bool ShowSeparatorBefore);

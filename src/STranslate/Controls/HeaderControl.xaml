@@ -125,6 +125,126 @@
                                                     Icon="{x:Static ui:FluentSystemIcons.ChevronCircleRight_20_Regular}"
                                                     ToolTip="{DynamicResource Next}" />
                                             </ikw:SimpleStackPanel>
+                                            <Grid x:Name="ServiceSwitcherGroup" Visibility="Collapsed">
+                                                <control:IconButton
+                                                    x:Name="ServiceSwitcherButton"
+                                                    Icon="{x:Static ui:FluentSystemIcons.Apps_20_Regular}"
+                                                    Tag="{Binding RelativeSource={RelativeSource AncestorType={x:Type control:HeaderControl}}}"
+                                                    ToolTip="{DynamicResource ServiceQuickSwitcher}"
+                                                    Type="Toggle" />
+                                                <control:ServiceSwitcherPopup
+                                                    x:Name="ServiceSwitcherPopup"
+                                                    AllowsTransparency="True"
+                                                    DataContext="{Binding Tag, ElementName=ServiceSwitcherButton}"
+                                                    Focusable="True"
+                                                    IsOpen="{Binding IsOn, ElementName=ServiceSwitcherButton, Mode=TwoWay}"
+                                                    Placement="Bottom"
+                                                    PlacementTarget="{Binding ElementName=ServiceSwitcherButton}"
+                                                    PopupAnimation="Fade"
+                                                    StaysOpen="False"
+                                                    VerticalOffset="4">
+                                                    <Border
+                                                        MinWidth="220"
+                                                        MaxWidth="320"
+                                                        Background="{DynamicResource {x:Static ui:ThemeKeys.SolidBackgroundFillColorBaseBrushKey}}"
+                                                        CornerRadius="6">
+                                                        <Border
+                                                            Padding="4"
+                                                            Background="{DynamicResource SettingsCardBackground}"
+                                                            BorderBrush="{DynamicResource SettingsCardBorderBrush}"
+                                                            BorderThickness="{DynamicResource SettingsCardBorderThickness}"
+                                                            CornerRadius="6">
+                                                            <ui:ScrollViewerEx
+                                                                MaxHeight="420"
+                                                                CanContentScroll="False"
+                                                                HorizontalScrollBarVisibility="Disabled">
+                                                                <Grid>
+                                                                    <ItemsControl
+                                                                        x:Name="QuickServiceItemsControl"
+                                                                        HorizontalAlignment="Stretch"
+                                                                        ItemsSource="{Binding QuickServiceItems}">
+                                                                        <ItemsControl.ItemContainerStyle>
+                                                                            <Style TargetType="ContentPresenter">
+                                                                                <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                                                            </Style>
+                                                                        </ItemsControl.ItemContainerStyle>
+                                                                        <ItemsControl.ItemTemplate>
+                                                                            <DataTemplate>
+                                                                                <StackPanel>
+                                                                                    <Separator
+                                                                                        Margin="8,4"
+                                                                                        Visibility="{Binding ShowSeparatorBefore, Converter={cnvt:BoolToVisibilityConverter}}" />
+                                                                                    <Button
+                                                                                        Padding="8,7"
+                                                                                        HorizontalAlignment="Stretch"
+                                                                                        HorizontalContentAlignment="Stretch"
+                                                                                        Command="{Binding DataContext.ToggleQuickServiceCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                                                                        CommandParameter="{Binding Service}">
+                                                                                        <Button.Style>
+                                                                                            <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
+                                                                                                <Setter Property="Background" Value="Transparent" />
+                                                                                                <Setter Property="BorderThickness" Value="0" />
+                                                                                                <Setter Property="ui:ControlHelper.CornerRadius" Value="4" />
+                                                                                                <Style.Triggers>
+                                                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                                                        <Setter Property="Background" Value="{DynamicResource {x:Static ui:ThemeKeys.SubtleFillColorSecondaryBrushKey}}" />
+                                                                                                    </Trigger>
+                                                                                                    <Trigger Property="IsPressed" Value="True">
+                                                                                                        <Setter Property="Background" Value="{DynamicResource {x:Static ui:ThemeKeys.SubtleFillColorTertiaryBrushKey}}" />
+                                                                                                    </Trigger>
+                                                                                                </Style.Triggers>
+                                                                                            </Style>
+                                                                                        </Button.Style>
+                                                                                        <Grid>
+                                                                                            <Grid.ColumnDefinitions>
+                                                                                                <ColumnDefinition Width="24" />
+                                                                                                <ColumnDefinition Width="24" />
+                                                                                                <ColumnDefinition Width="Auto" />
+                                                                                                <ColumnDefinition Width="Auto" />
+                                                                                            </Grid.ColumnDefinitions>
+                                                                                            <ui:FontIcon
+                                                                                                Grid.Column="0"
+                                                                                                VerticalAlignment="Center"
+                                                                                                Foreground="{DynamicResource {x:Static ui:ThemeKeys.AccentTextFillColorPrimaryBrushKey}}"
+                                                                                                Icon="{x:Static ui:FluentSystemIcons.Checkmark_20_Regular}"
+                                                                                                Visibility="{Binding Service.IsEnabled, Converter={cnvt:BoolToVisibilityConverter}}" />
+                                                                                            <Image
+                                                                                                Grid.Column="1"
+                                                                                                Width="20"
+                                                                                                Height="20"
+                                                                                                Source="{Binding Service.MetaData.IconPath}" />
+                                                                                            <TextBlock
+                                                                                                Grid.Column="2"
+                                                                                                Margin="8,0"
+                                                                                                MaxWidth="180"
+                                                                                                VerticalAlignment="Center"
+                                                                                                Text="{Binding Service.DisplayName}"
+                                                                                                TextTrimming="CharacterEllipsis"
+                                                                                                ToolTipService.ToolTip="{Binding Service.DisplayName}" />
+                                                                                            <control:Badge
+                                                                                                Grid.Column="3"
+                                                                                                Margin="3,0"
+                                                                                                VerticalAlignment="Center"
+                                                                                                IsOfficial="{Binding Service.MetaData.IsPrePlugin}" />
+                                                                                        </Grid>
+                                                                                    </Button>
+                                                                                </StackPanel>
+                                                                            </DataTemplate>
+                                                                        </ItemsControl.ItemTemplate>
+                                                                    </ItemsControl>
+                                                                    <TextBlock
+                                                                        Margin="16,20"
+                                                                        HorizontalAlignment="Center"
+                                                                        VerticalAlignment="Center"
+                                                                        Foreground="{DynamicResource {x:Static ui:ThemeKeys.TextFillColorSecondaryBrushKey}}"
+                                                                        Text="{DynamicResource NoConfiguredServices}"
+                                                                        Visibility="{Binding ElementName=QuickServiceItemsControl, Path=HasItems, Converter={cnvt:BoolToVisibilityInverseConverter}}" />
+                                                                </Grid>
+                                                            </ui:ScrollViewerEx>
+                                                        </Border>
+                                                    </Border>
+                                                </control:ServiceSwitcherPopup>
+                                            </Grid>
                                         </Grid>
                                         <DataTemplate.Triggers>
                                             <DataTrigger Binding="{Binding}" Value="{x:Static core:MainHeaderActions.ClipboardMonitor}">
@@ -153,6 +273,10 @@
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding}" Value="{x:Static core:MainHeaderActions.HistoryNavigation}">
                                                 <Setter TargetName="HistoryNavigationGroup" Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding}" Value="{x:Static core:MainHeaderActions.ServiceSwitcher}">
+                                                <Setter TargetName="ServiceSwitcherGroup" Property="Visibility" Value="Visible" />
+                                                <Setter TargetName="ServiceSwitcherButton" Property="IsOn" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type control:HeaderControl}}, Path=IsServiceSwitcherOpen, Mode=TwoWay}" />
                                             </DataTrigger>
                                         </DataTemplate.Triggers>
                                     </DataTemplate>

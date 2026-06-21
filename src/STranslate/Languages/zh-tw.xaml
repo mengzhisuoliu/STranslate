@@ -12,6 +12,8 @@
     <!--  // Navigation //  -->
     <sys:String x:Key="General">常規</sys:String>
     <sys:String x:Key="Services">服務</sys:String>
+    <sys:String x:Key="ServiceQuickSwitcher">服務快速開關</sys:String>
+    <sys:String x:Key="NoConfiguredServices">尚未設定任何服務</sys:String>
     <sys:String x:Key="Translate">文本翻譯</sys:String>
     <sys:String x:Key="Ocr">文本識別</sys:String>
     <sys:String x:Key="Tts">語音合成</sys:String>

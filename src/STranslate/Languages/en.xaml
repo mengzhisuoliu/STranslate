@@ -12,6 +12,8 @@
     <!--  // Navigation //  -->
     <sys:String x:Key="General">General</sys:String>
     <sys:String x:Key="Services">Services</sys:String>
+    <sys:String x:Key="ServiceQuickSwitcher">Quick Service Switcher</sys:String>
+    <sys:String x:Key="NoConfiguredServices">No services configured</sys:String>
     <sys:String x:Key="Translate">Translate</sys:String>
     <sys:String x:Key="Ocr">Ocr</sys:String>
     <sys:String x:Key="Tts">Tts</sys:String>

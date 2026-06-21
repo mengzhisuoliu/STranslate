@@ -11,6 +11,7 @@ public static class MainHeaderActions
     public const string ColorScheme = "color_scheme";
     public const string HideInput = "hide_input";
     public const string HistoryNavigation = "history_navigation";
+    public const string ServiceSwitcher = "service_switcher";
 
     public static IReadOnlyList<string> DefaultOrder { get; } =
     [
@@ -22,7 +23,8 @@ public static class MainHeaderActions
         MouseHook,
         ColorScheme,
         HideInput,
-        HistoryNavigation
+        HistoryNavigation,
+        ServiceSwitcher
     ];
 
     public static IReadOnlyList<string> All => DefaultOrder;

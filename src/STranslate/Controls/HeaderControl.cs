@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Collections.Generic;
+using STranslate.ViewModels;
 
 namespace STranslate.Controls;
 
@@ -412,6 +413,49 @@ public class HeaderControl : Control
             typeof(HeaderControl),
             new FrameworkPropertyMetadata(
                 true,
+                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+    #endregion
+
+    #region Service Switcher
+
+    public IEnumerable<ServiceQuickAccessItem>? QuickServiceItems
+    {
+        get => (IEnumerable<ServiceQuickAccessItem>?)GetValue(QuickServiceItemsProperty);
+        set => SetValue(QuickServiceItemsProperty, value);
+    }
+
+    public static readonly DependencyProperty QuickServiceItemsProperty =
+        DependencyProperty.Register(
+            nameof(QuickServiceItems),
+            typeof(IEnumerable<ServiceQuickAccessItem>),
+            typeof(HeaderControl));
+
+    public ICommand? ToggleQuickServiceCommand
+    {
+        get => (ICommand?)GetValue(ToggleQuickServiceCommandProperty);
+        set => SetValue(ToggleQuickServiceCommandProperty, value);
+    }
+
+    public static readonly DependencyProperty ToggleQuickServiceCommandProperty =
+        DependencyProperty.Register(
+            nameof(ToggleQuickServiceCommand),
+            typeof(ICommand),
+            typeof(HeaderControl));
+
+    public bool IsServiceSwitcherOpen
+    {
+        get => (bool)GetValue(IsServiceSwitcherOpenProperty);
+        set => SetValue(IsServiceSwitcherOpenProperty, value);
+    }
+
+    public static readonly DependencyProperty IsServiceSwitcherOpenProperty =
+        DependencyProperty.Register(
+            nameof(IsServiceSwitcherOpen),
+            typeof(bool),
+            typeof(HeaderControl),
+            new FrameworkPropertyMetadata(
+                false,
                 FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
     #endregion

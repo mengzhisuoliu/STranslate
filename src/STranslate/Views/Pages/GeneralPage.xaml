@@ -114,6 +114,10 @@
                         <Setter TargetName="PreviewHistoryGroup" Property="Visibility" Value="Visible" />
                         <Setter TargetName="PreviewHistoryGroup" Property="ToolTip" Value="{DynamicResource General_ShowHistoryNavigation}" />
                     </DataTrigger>
+                    <DataTrigger Binding="{Binding}" Value="{x:Static core:MainHeaderActions.ServiceSwitcher}">
+                        <Setter TargetName="PreviewSingleIcon" Property="Icon" Value="{x:Static ui:FluentSystemIcons.Apps_20_Regular}" />
+                        <Setter TargetName="PreviewSingleButton" Property="ToolTip" Value="{DynamicResource ServiceQuickSwitcher}" />
+                    </DataTrigger>
                 </DataTemplate.Triggers>
             </DataTemplate>
 
@@ -169,6 +173,10 @@
                     <DataTrigger Binding="{Binding}" Value="{x:Static core:MainHeaderActions.HistoryNavigation}">
                         <Setter TargetName="PoolActionIcon" Property="Icon" Value="{x:Static ui:FluentSystemIcons.AppRecent_20_Regular}" />
                         <Setter TargetName="PoolActionText" Property="Text" Value="{DynamicResource General_ShowHistoryNavigation}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding}" Value="{x:Static core:MainHeaderActions.ServiceSwitcher}">
+                        <Setter TargetName="PoolActionIcon" Property="Icon" Value="{x:Static ui:FluentSystemIcons.Apps_20_Regular}" />
+                        <Setter TargetName="PoolActionText" Property="Text" Value="{DynamicResource ServiceQuickSwitcher}" />
                     </DataTrigger>
                 </DataTemplate.Triggers>
             </DataTemplate>

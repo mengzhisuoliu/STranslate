@@ -10,6 +10,8 @@
 
     <sys:String x:Key="General">一般</sys:String>
     <sys:String x:Key="Services">サービス</sys:String>
+    <sys:String x:Key="ServiceQuickSwitcher">サービスクイック切り替え</sys:String>
+    <sys:String x:Key="NoConfiguredServices">サービスが設定されていません</sys:String>
     <sys:String x:Key="Translate">テキスト翻訳</sys:String>
     <sys:String x:Key="Ocr">文字認識</sys:String>
     <sys:String x:Key="Tts">音声合成</sys:String>
