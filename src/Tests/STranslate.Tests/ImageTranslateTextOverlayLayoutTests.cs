@@ -73,7 +73,7 @@ public class ImageTranslateTextOverlayLayoutTests
 
         var plan = CreatePlan(block, new Rect(0, 0, 200, 60), (_, _) => new Size(10, 10));
 
-        Assert.Equal(Color.FromArgb(210, 255, 255, 255), plan.OverlayBackgroundColor);
+        Assert.Equal(Color.FromArgb(235, 255, 255, 255), plan.OverlayBackgroundColor);
         Assert.Equal(Colors.Black, plan.ForegroundColor);
         Assert.Single(plan.EraseRects);
         Assert.Equal(8, plan.EraseRects[0].Left, precision: 3);
@@ -246,7 +246,7 @@ public class ImageTranslateTextOverlayLayoutTests
             (_, _, _) => new Size(10, 10),
             ImageTranslateOverlayTheme.Light);
 
-        Assert.Equal(Color.FromArgb(210, 255, 255, 255), plan.OverlayBackgroundColor);
+        Assert.Equal(Color.FromArgb(235, 255, 255, 255), plan.OverlayBackgroundColor);
         Assert.Equal(Colors.Black, plan.ForegroundColor);
     }
 
@@ -263,7 +263,7 @@ public class ImageTranslateTextOverlayLayoutTests
             (_, _, _) => new Size(10, 10),
             ImageTranslateOverlayTheme.Dark);
 
-        Assert.Equal(Color.FromArgb(205, 0, 0, 0), plan.OverlayBackgroundColor);
+        Assert.Equal(Color.FromArgb(230, 0, 0, 0), plan.OverlayBackgroundColor);
         Assert.Equal(Colors.White, plan.ForegroundColor);
     }
 

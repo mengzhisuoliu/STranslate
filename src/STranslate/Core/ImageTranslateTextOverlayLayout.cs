@@ -35,8 +35,8 @@ internal static class ImageTranslateTextOverlayLayout
     private const double MultilineFontScale = 0.90;
     private const double SingleLineFontScale = 1.08;
     private const double HorizontalTextPadding = 1;
-    private static readonly Color DarkOverlayBackground = Color.FromArgb(205, 0, 0, 0);
-    private static readonly Color LightOverlayBackground = Color.FromArgb(210, 255, 255, 255);
+    private static readonly Color DarkOverlayBackground = Color.FromArgb(230, 0, 0, 0);
+    private static readonly Color LightOverlayBackground = Color.FromArgb(235, 255, 255, 255);
 
     internal static ImageTranslateTextOverlayPlan Create(
         OcrLayoutBlock block,
