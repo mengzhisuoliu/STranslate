@@ -98,6 +98,17 @@
                     Style="{DynamicResource BodyStrongTextBlockStyle}"
                     Text="{DynamicResource ImageTranslate}" />
 
+                <ui:SettingsCard Description="{DynamicResource Standalone_ImTranWindowModeDescription}" Header="{DynamicResource Standalone_ImTranWindowModeHeader}">
+                    <ui:SettingsCard.HeaderIcon>
+                        <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.WindowApps_20_Regular}" />
+                    </ui:SettingsCard.HeaderIcon>
+                    <ComboBox
+                        DisplayMemberPath="Display"
+                        ItemsSource="{Binding DataProvider.ImageTranslateWindowModes}"
+                        SelectedValue="{Binding Settings.ImageTranslateWindowMode}"
+                        SelectedValuePath="Value" />
+                </ui:SettingsCard>
+
                 <ui:SettingsCard Description="{DynamicResource Standalone_ImTranShowAnnotatedDescription}" Header="{DynamicResource Standalone_ImTranShowAnnotatedHeader}">
                     <ui:SettingsCard.HeaderIcon>
                         <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.ImageSplit_20_Regular}" />

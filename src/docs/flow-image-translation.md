@@ -1,7 +1,7 @@
 # 图片翻译链路
 
 ## 模块职责
-- 管理图片翻译窗口的导入、截图、重试、标注图和结果图显示。
+- 管理图片翻译独立窗口/精简窗口的导入、截图、重试、标注图和结果图显示。
 - 维护图片翻译专用 OCR 服务与翻译服务绑定，避免普通 OCR 服务误入需要坐标的流程。
 - 对 OCR 结果执行结构化投影、分段逻辑、翻译分发、文字覆盖回写和图片级文本选中。
 - 约束 OCR 插件坐标框支持声明、结构化分段返回方式和本地 `Smart` 分段回退策略。
@@ -12,6 +12,11 @@
   - `ApplyLayoutAnalysis(OcrResult)`：按分段模式生成 `OcrLayoutBlock`。
   - `GenerateTranslatedImage(IReadOnlyList<OcrLayoutBlock>, BitmapSource?)`：擦除原文并覆盖译文。
   - `RefreshSelectableOcrWords()`：在原文标注图和译文结果图之间切换图片文本选中数据源。
+- `STranslate/Views/ImageTranslateWindow.xaml` / `ImageTranslateCompactWindow.xaml`
+  - `Standalone`：原独立窗口，保留服务、语言、文本框和完整工具栏。
+  - `Compact`：无标题精简窗口，图片区贴回截图选区，底部预留悬浮核心按钮区。
+- `STranslate/Core/ScreenshotSelectionResolver.cs`
+  - 通过截图结束鼠标位置、截图尺寸和候选屏幕区域像素匹配，推断截图选区物理坐标。
 - `STranslate/Core/OcrLayoutAnalyzer.cs`
   - `AnalyzeBlocks(OcrResult, LayoutAnalysisMode)`：分段逻辑入口。
   - `Auto` / `Provider` / `Smart` / `NoMerge`：图片翻译分段策略。
@@ -28,16 +33,26 @@
 
 ## 从入口到结果
 1. 入口来自主窗口图片翻译命令、图片翻译窗口导入文件、剪贴板图片、重新执行或窗口内截图。
-2. `ImageTranslateWindowViewModel.ExecuteAsync(bitmap)` 清空旧状态，缓存 `_sourceImage` 并显示原图。
-3. 获取图片翻译专用 OCR：`OcrService.GetImageTranslateOcrSvcOrDefault()`。候选服务必须实现 `IOcrPlugin`，并让 `SupportBoxPoints()` 返回 `true`。
-4. 宿主用真实图片尺寸构造 `OcrRequest(data, Settings.OcrLanguage, bitmap.Width, bitmap.Height)`，插件必须返回图片像素坐标 `BoxPoints`。
-5. OCR 返回后调用 `Utilities.PrepareOcrResult()`；如果插件只填充结构化 `Regions`，宿主会投影出兼容的 `OcrContents`。
-6. 原始 OCR 结果用于图片文本选中：`OcrWordBuilder.CreateFromOcrContents(_lastOcrResult.OcrContents)` 生成原文选中块。
-7. `ApplyLayoutAnalysis()` 生成 `OcrLayoutBlock`，并把分析后的块投影回 `OcrResult.OcrContents`，供标注图、复制和结果文本复用。
-8. 获取 `TranslateService.ImageTranslateService`，该服务必须是 `ITranslatePlugin`，词典类服务不会进入图片翻译翻译列表。
-9. 对每个 `OcrLayoutBlock.Text` 并发执行语言检测和翻译；翻译成功后用 `ImageTranslateTextOverlayLayout.NormalizeOverlayText()` 收敛空白，再回写到对应 block。
-10. 使用翻译后的分段块生成结果图：优先按每个 block 的 `LineBoxPoints` 擦除原文，再按覆盖策略绘制译文。
-11. `Settings.IsImTranShowingAnnotated` 控制显示标注图还是结果图；图片文本选中同步切换为原文块或译文块。
+2. 主窗口图片翻译入口会先关闭已打开的图片翻译独立窗口或精简窗口，再截图，避免把旧结果截入新图片。
+3. `IScreenshot.GetScreenshotCaptureAsync()` 返回截图 `Bitmap` 和可空选区坐标；精简窗口优先贴回选区，定位失败时按截图结束鼠标位置和截图尺寸推断位置。
+4. `Settings.ImageTranslateWindowMode` 决定使用 `ImageTranslateWindow` 还是 `ImageTranslateCompactWindow` 承载同一个 `ImageTranslateWindowViewModel`。
+5. `ImageTranslateWindowViewModel.ExecuteAsync(bitmap)` 清空旧状态，缓存 `_sourceImage` 并显示原图。
+6. 获取图片翻译专用 OCR：`OcrService.GetImageTranslateOcrSvcOrDefault()`。候选服务必须实现 `IOcrPlugin`，并让 `SupportBoxPoints()` 返回 `true`。
+7. 宿主用真实图片尺寸构造 `OcrRequest(data, Settings.OcrLanguage, bitmap.Width, bitmap.Height)`，插件必须返回图片像素坐标 `BoxPoints`。
+8. OCR 返回后调用 `Utilities.PrepareOcrResult()`；如果插件只填充结构化 `Regions`，宿主会投影出兼容的 `OcrContents`。
+9. 原始 OCR 结果用于图片文本选中：`OcrWordBuilder.CreateFromOcrContents(_lastOcrResult.OcrContents)` 生成原文选中块。
+10. `ApplyLayoutAnalysis()` 生成 `OcrLayoutBlock`，并把分析后的块投影回 `OcrResult.OcrContents`，供标注图、复制和结果文本复用。
+11. 获取 `TranslateService.ImageTranslateService`，该服务必须是 `ITranslatePlugin`，词典类服务不会进入图片翻译翻译列表。
+12. 对每个 `OcrLayoutBlock.Text` 并发执行语言检测和翻译；翻译成功后用 `ImageTranslateTextOverlayLayout.NormalizeOverlayText()` 收敛空白，再回写到对应 block。
+13. 使用翻译后的分段块生成结果图：优先按每个 block 的 `LineBoxPoints` 擦除原文，再按覆盖策略绘制译文。
+14. `Settings.IsImTranShowingAnnotated` 控制显示标注图还是结果图；图片文本选中同步切换为原文块或译文块。
+
+## 窗口模式
+- `Standalone` 是默认模式，保留当前可缩放、可调整大小的独立窗口。
+- `Compact` 使用无标题、不可缩放、非任务栏窗口，图片区尺寸等于截图选区，窗口高度额外预留底部按钮区。
+- 精简窗口不支持图片拖拽、滚轮缩放或双击复位，底部只保留关闭、复制/全选、标注切换、重新截图、重新执行和设置等核心按钮。
+- 精简窗口按 `Esc`、点击窗口外部或再次触发图片翻译关闭；右键菜单和窗口内部文字选择不会触发外部关闭。
+- 精简窗口不显示右侧文本框，`Settings.IsImTranShowingTextControl` 只影响独立窗口。
 
 ## 分段模式
 - `Auto`：默认模式。OCR 返回结构化 `Regions` 时使用 Provider 段落；没有结构化分段时回退 `Smart`。
@@ -90,6 +105,7 @@
 - OCR 专用绑定：`ServiceSettings.ImageTranslateOcrSvcID`，由图片翻译窗口的 OCR 选择写入。
 - 翻译专用绑定：`ServiceSettings.ImageTranslateSvcID`，由图片翻译窗口的翻译服务选择写入。
 - 服务缺失或插件被删除时，启动加载会重置失效的图片翻译服务 ID。
+- `Settings.ImageTranslateWindowMode` 控制图片翻译结果使用独立窗口或精简窗口，默认 `Standalone`。
 - `Settings.LayoutAnalysisMode` 是分段模式配置，默认 `Auto`，序列化支持 `auto`、`provider`、`smart`、`noMerge`；旧未知值归一为 `Auto`。
 - `Settings.IsImTranShowingAnnotated` 控制标注图/结果图显示。
 - `Settings.IsImTranShowingTextControl` 控制图片翻译窗口文本区域显示。
@@ -105,6 +121,8 @@
 
 ## 关键文件
 - `STranslate/ViewModels/ImageTranslateWindowViewModel.cs`
+- `STranslate/Views/ImageTranslateCompactWindow.xaml`
+- `STranslate/Core/ScreenshotSelectionResolver.cs`
 - `STranslate/Core/OcrLayoutAnalyzer.cs`
 - `STranslate/Core/OcrLayoutBlock.cs`
 - `STranslate/Core/ImageTranslateTextOverlayLayout.cs`
@@ -114,6 +132,7 @@
 - `STranslate.Plugin/IOcrPlugin.cs`
 - `Tests/STranslate.Tests/OcrLayoutAnalyzerTests.cs`
 - `Tests/STranslate.Tests/ImageTranslateTextOverlayLayoutTests.cs`
+- `Tests/STranslate.Tests/ScreenshotSelectionResolverTests.cs`
 
 ## 常见改动任务
 - 调整图片翻译分段逻辑或表格/网格误合并：优先改 `OcrLayoutAnalyzer`，并补 `OcrLayoutAnalyzerTests`。
@@ -122,3 +141,4 @@
 - 调整图片翻译 OCR 候选服务：改 `OcrService.IsImageTranslateOcrService()` / `GetImageTranslateOcrServices()`。
 - 调整图片翻译翻译服务候选：改 `ImageTranslateWindowViewModel.OnTransFilter()` 或 `TranslateService.ImageTranslateService` 相关逻辑。
 - 调整图片上选中文本行为：改 `RefreshSelectableOcrWords()`、`OcrWordBuilder` 或 `ImageZoom` 的选区逻辑。
+- 调整精简窗口定位或关闭行为：改 `ImageTranslateCompactWindow` 和 `ScreenshotSelectionResolver`，并补 `ScreenshotSelectionResolverTests`。

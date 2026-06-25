@@ -1113,6 +1113,8 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private async Task ImageTranslateAsync()
     {
+        CloseImageTranslateWindows();
+
         var ocrPlugin = GetImageTranslateOcrSvcAndNotify();
         if (ocrPlugin == null)
             return;
@@ -1127,20 +1129,30 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
         }
 
 
-        using var bitmap = await _screenshot.GetScreenshotAsync();
-        await ImageTranslateHandlerAsync(bitmap, ocrPlugin);
+        using var captureResult = await _screenshot.GetScreenshotCaptureAsync();
+        await ImageTranslateHandlerAsync(captureResult?.Bitmap, ocrPlugin, captureResult?.PhysicalBounds);
     }
 
-    public async Task ImageTranslateHandlerAsync(Bitmap? bitmap, IOcrPlugin? ocrPlugin = default)
+    public async Task ImageTranslateHandlerAsync(Bitmap? bitmap, IOcrPlugin? ocrPlugin = default, Rectangle? physicalBounds = default)
     {
         if (bitmap == null) return;
+
+        CloseImageTranslateWindows();
 
         ocrPlugin ??= GetImageTranslateOcrSvcAndNotify();
         if (ocrPlugin == null)
             return;
 
-        var window = await SingletonWindowOpener.OpenAsync<ImageTranslateWindow>();
-        await ((ImageTranslateWindowViewModel)window.DataContext).ExecuteCommand.ExecuteAsync(bitmap);
+        if (Settings.ImageTranslateWindowMode == ImageTranslateWindowMode.Compact)
+        {
+            var window = await SingletonWindowOpener.OpenAsync<ImageTranslateCompactWindow>(WindowActivationMode.ForceForeground);
+            window.PlaceForCapture(physicalBounds, bitmap.Size);
+            await ((ImageTranslateWindowViewModel)window.DataContext).ExecuteCommand.ExecuteAsync(bitmap);
+            return;
+        }
+
+        var standaloneWindow = await SingletonWindowOpener.OpenAsync<ImageTranslateWindow>();
+        await ((ImageTranslateWindowViewModel)standaloneWindow.DataContext).ExecuteCommand.ExecuteAsync(bitmap);
     }
 
     [RelayCommand]
@@ -1252,6 +1264,17 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
         }
 
         return svc;
+    }
+
+    private static void CloseImageTranslateWindows()
+    {
+        var windows = Application.Current.Windows
+            .OfType<Window>()
+            .Where(window => window is ImageTranslateWindow or ImageTranslateCompactWindow)
+            .ToList();
+
+        foreach (var window in windows)
+            window.Close();
     }
 
     #endregion

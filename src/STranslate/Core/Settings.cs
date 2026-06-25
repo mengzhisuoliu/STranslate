@@ -258,6 +258,7 @@ public partial class Settings : ObservableObject
 
     #region Image Translate Settings
 
+    [ObservableProperty] public partial ImageTranslateWindowMode ImageTranslateWindowMode { get; set; } = ImageTranslateWindowMode.Standalone;
     [ObservableProperty] public partial bool IsImTranShowingAnnotated { get; set; } = false;
     [ObservableProperty] public partial bool IsImTranShowingTextControl { get; set; } = false;
     [ObservableProperty] public partial LangEnum ImageTranslateSourceLang { get; set; } = LangEnum.Auto;
@@ -745,6 +746,12 @@ public enum LayoutAnalysisMode
     Provider,
     Smart,
     NoMerge,
+}
+
+public enum ImageTranslateWindowMode
+{
+    Standalone,
+    Compact,
 }
 
 public enum WindowScreenType

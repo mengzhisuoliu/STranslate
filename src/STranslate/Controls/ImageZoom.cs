@@ -276,6 +276,16 @@ public class ImageZoom : Control
         DependencyProperty.Register(nameof(DisableDoubleClickReset), typeof(bool), typeof(ImageZoom),
             new FrameworkPropertyMetadata(false));
 
+    public bool IsPanAndZoomEnabled
+    {
+        get => (bool)GetValue(IsPanAndZoomEnabledProperty);
+        set => SetValue(IsPanAndZoomEnabledProperty, value);
+    }
+
+    public static readonly DependencyProperty IsPanAndZoomEnabledProperty =
+        DependencyProperty.Register(nameof(IsPanAndZoomEnabled), typeof(bool), typeof(ImageZoom),
+            new FrameworkPropertyMetadata(true));
+
     public Cursor MoveCursor
     {
         get => (Cursor)GetValue(MoveCursorProperty);
@@ -397,6 +407,12 @@ public class ImageZoom : Control
         if (HandleTextSelectionMouseDown(e))
             return;
 
+        if (!IsPanAndZoomEnabled)
+        {
+            e.Handled = true;
+            return;
+        }
+
         if (HandleDoubleClick(e))
             return;
 
@@ -443,6 +459,12 @@ public class ImageZoom : Control
 
     private void OnMouseWheel(object sender, MouseWheelEventArgs e)
     {
+        if (!IsPanAndZoomEnabled)
+        {
+            e.Handled = true;
+            return;
+        }
+
         var isZoomIn = e.Delta > 0;
 
         if (TryZoomAtMousePosition(e, isZoomIn))
@@ -559,7 +581,7 @@ public class ImageZoom : Control
 
     private bool HandleDoubleClick(MouseButtonEventArgs e)
     {
-        if (!DisableDoubleClickReset && e.ClickCount == 2)
+        if (IsPanAndZoomEnabled && !DisableDoubleClickReset && e.ClickCount == 2)
         {
             Reset();
             e.Handled = true;
@@ -570,6 +592,9 @@ public class ImageZoom : Control
 
     private void StartDragging(MouseButtonEventArgs e)
     {
+        if (!IsPanAndZoomEnabled)
+            return;
+
         _lastMousePosition = e.GetPosition(_imageContainer);
         _imageContainer?.CaptureMouse();
         _imageContainer?.Cursor = MoveCursor;

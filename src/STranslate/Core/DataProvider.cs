@@ -32,6 +32,7 @@ public class DataProvider
         DropdownDataGeneric<CrosswordFetchFailedFallbackTarget>.UpdateLabels(CrosswordFetchFailedFallbackTargets);
         DropdownDataGeneric<PluginType>.UpdateLabels(PluginTypes);
         DropdownDataGeneric<LayoutAnalysisMode>.UpdateLabels(LayoutAnalysisModes);
+        DropdownDataGeneric<ImageTranslateWindowMode>.UpdateLabels(ImageTranslateWindowModes);
         DropdownDataGeneric<WindowScreenType>.UpdateLabels(WindowScreenTypes);
         DropdownDataGeneric<WindowAlignType>.UpdateLabels(WindowAlignTypes);
         DropdownDataGeneric<StartMode>.UpdateLabels(StartModes);
@@ -126,6 +127,14 @@ public class DataProvider
             .GetValues<LayoutAnalysisModeData>("LayoutAnalysisMode")
             .Where(x => x.Value is LayoutAnalysisMode.Auto or LayoutAnalysisMode.Provider or LayoutAnalysisMode.Smart or LayoutAnalysisMode.NoMerge)
             .ToList();
+
+    #endregion
+
+    #region ImageTranslateWindowMode
+
+    public class ImageTranslateWindowModeData : DropdownDataGeneric<ImageTranslateWindowMode> { }
+    public List<ImageTranslateWindowModeData> ImageTranslateWindowModes { get; } =
+        DropdownDataGeneric<ImageTranslateWindowMode>.GetValues<ImageTranslateWindowModeData>("ImageTranslateWindowMode");
 
     #endregion
 

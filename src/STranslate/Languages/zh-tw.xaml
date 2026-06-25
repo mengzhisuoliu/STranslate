@@ -318,6 +318,8 @@
     <sys:String x:Key="Standalone_ImTranShowAnnotatedDescription">切換翻譯結果／文字偵測圖顯示。</sys:String>
     <sys:String x:Key="Standalone_ImTranShowTextControlHeader">顯示文字框</sys:String>
     <sys:String x:Key="Standalone_ImTranShowTextControlDescription">顯示／隱藏右側文字框。</sys:String>
+    <sys:String x:Key="Standalone_ImTranWindowModeHeader">圖片翻譯視窗模式</sys:String>
+    <sys:String x:Key="Standalone_ImTranWindowModeDescription">選擇圖片翻譯結果使用獨立視窗或精簡懸浮視窗顯示。</sys:String>
     <sys:String x:Key="Standalone_LayoutAnalysisHeader">分段邏輯設定</sys:String>
     <sys:String x:Key="Standalone_LayoutAnalysisDescription">設定辨識結果的分段與合併方式。</sys:String>
 
@@ -607,6 +609,8 @@
     <sys:String x:Key="LayoutAnalysisModeProvider">服務商分段</sys:String>
     <sys:String x:Key="LayoutAnalysisModeSmart">智慧分段</sys:String>
     <sys:String x:Key="LayoutAnalysisModeNoMerge">不合併</sys:String>
+    <sys:String x:Key="ImageTranslateWindowModeStandalone">獨立視窗</sys:String>
+    <sys:String x:Key="ImageTranslateWindowModeCompact">精簡視窗</sys:String>
 
     <sys:String x:Key="WindowScreenTypeRememberLastLaunchLocation">記住上次的位置</sys:String>
     <sys:String x:Key="WindowScreenTypeCursor">滑鼠游標所在顯示器</sys:String>
