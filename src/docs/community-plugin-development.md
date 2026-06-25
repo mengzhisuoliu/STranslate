@@ -93,7 +93,7 @@ git remote add origin https://github.com/STranslate/STranslate.Plugin.Translate.
 - **`ExecuteFileName`**：改为自己的插件 dll 文件名。
 
 ### `csproj` 调试改法
-`ThirdPlugins` 下的社区插件会受到主仓库上层 `Directory.Packages.props` 影响，所以插件项目应显式关闭集中包版本管理，并保留自己的 `PackageReference` 版本。以下是 `DeepLX` 项目文件中的实际配置参考，不要遗漏其中的 Debug / Release 输出和内容复制项；`STranslate.Plugin` 推荐使用 [NuGet 上的最新版本](https://www.nuget.org/packages/STranslate.Plugin)，截至 2026-06-11 核对为 `1.0.11`：
+`ThirdPlugins` 下的社区插件会受到主仓库上层 `Directory.Packages.props` 影响，所以插件项目应显式关闭集中包版本管理，并保留自己的 `PackageReference` 版本。以下是 `DeepLX` 项目文件中的实际配置参考，不要遗漏其中的 Debug / Release 输出和内容复制项；`STranslate.Plugin` 推荐使用 [NuGet 上的最新版本](https://www.nuget.org/packages/STranslate.Plugin)，截至 2026-06-25 核对为 `1.0.12`：
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -151,7 +151,7 @@ git remote add origin https://github.com/STranslate/STranslate.Plugin.Translate.
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="STranslate.Plugin" Version="1.0.11" />
+        <PackageReference Include="STranslate.Plugin" Version="1.0.12" />
     </ItemGroup>
 
 </Project>
