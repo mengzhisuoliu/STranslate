@@ -94,6 +94,65 @@ public class ImageTranslateCompactWindowPlacementTests
     }
 
     [Fact]
+    public void CreateLayoutOverlaysWhenBothSidesTooSmall()
+    {
+        // 选区占满高度：顶=0 高=1080=workArea 高。下方空间=0，上方空间=0，都 < 70 → 叠加。
+        var layout = ImageTranslateCompactWindowPlacement.CreateLayout(
+            imageBounds: new Rectangle(100, 0, 640, 1080),
+            workArea: new Rectangle(0, 0, 1920, 1080),
+            dpiScaleX: 1.0,
+            dpiScaleY: 1.0,
+            minWidthDip: 1,
+            minImageHeightDip: 1,
+            toolbarWidthDip: 300,
+            toolbarHeightDip: 64,
+            gapHDip: 8,
+            gapVDip: 6,
+            windowMarginDip: 8);
+
+        // 叠加：toolbarY = imageBottom - toolbarHeight = 1080 - 64 = 1016
+        // 窗口顶 = imageTop = 0；窗口底 = imageBottom = 1080；窗口高 = 1080
+        Assert.Equal(new Rectangle(100, 0, 640, 1080), layout.WindowBounds);
+        Assert.Equal(0, layout.ImageOffsetX);
+        Assert.Equal(0, layout.ImageOffsetY);
+        // 按钮条居中：左 = (640-300)/2 = 170；顶 = 1016
+        Assert.Equal(170, layout.ToolbarX);
+        Assert.Equal(1016, layout.ToolbarY);
+        Assert.Equal(ToolbarSide.Overlay, layout.ToolbarSide);
+    }
+
+    [Fact]
+    public void CreateLayoutFlipsAboveWhenBelowTooSmall()
+    {
+        // 选区顶=950 高=100，底=1050。workArea 底=1080。下方空间=30 < 64+6=70 放不下。
+        // 上方空间 = 950 - 0 = 950 >= 70 放得下 → 翻上方。
+        var layout = ImageTranslateCompactWindowPlacement.CreateLayout(
+            imageBounds: new Rectangle(100, 950, 640, 100),
+            workArea: new Rectangle(0, 0, 1920, 1080),
+            dpiScaleX: 1.0,
+            dpiScaleY: 1.0,
+            minWidthDip: 1,
+            minImageHeightDip: 1,
+            toolbarWidthDip: 300,
+            toolbarHeightDip: 64,
+            gapHDip: 8,
+            gapVDip: 6,
+            windowMarginDip: 8);
+
+        // 翻上方：toolbarY = imageTop - gapV - toolbarHeight = 950 - 6 - 64 = 880
+        // 窗口顶 = toolbarY = 880；窗口底 = imageBottom + margin = 1050 + 8 = 1058
+        // 窗口高 = 1058 - 880 = 178
+        Assert.Equal(new Rectangle(100, 880, 640, 178), layout.WindowBounds);
+        // 图片窗口内偏移：左=0；顶 = imageTop - windowTop = 950 - 880 = 70
+        Assert.Equal(0, layout.ImageOffsetX);
+        Assert.Equal(70, layout.ImageOffsetY);
+        // 按钮条居中：左 = (640-300)/2 = 170；顶 = 0
+        Assert.Equal(170, layout.ToolbarX);
+        Assert.Equal(0, layout.ToolbarY);
+        Assert.Equal(ToolbarSide.Above, layout.ToolbarSide);
+    }
+
+    [Fact]
     public void CreateCenteredOnWorkAreaClampsToPhysicalWorkArea()
     {
         var actual = ImageTranslateCompactWindowPlacement.CreateCenteredOnWorkArea(

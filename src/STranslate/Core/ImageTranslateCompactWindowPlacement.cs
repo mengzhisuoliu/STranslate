@@ -97,7 +97,11 @@ internal static class ImageTranslateCompactWindowPlacement
             }
             else
             {
-                throw new NotImplementedException("overlay handled in Task 4");
+                // 上下都放不下：叠加在图片底部之上（按钮条 ZIndex 高于图片，由 XAML 保证）
+                toolbarY = imageBottom - toolbarHeight;
+                windowTop = imageBounds.Top;
+                windowBottom = imageBottom;
+                side = ToolbarSide.Overlay;
             }
         }
 
