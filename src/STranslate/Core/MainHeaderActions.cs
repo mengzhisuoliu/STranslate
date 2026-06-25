@@ -23,8 +23,8 @@ public static class MainHeaderActions
         MouseHook,
         ColorScheme,
         HideInput,
-        HistoryNavigation,
-        ServiceSwitcher
+        ServiceSwitcher,
+        HistoryNavigation
     ];
 
     public static IReadOnlyList<string> All => DefaultOrder;
