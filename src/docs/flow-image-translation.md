@@ -17,6 +17,7 @@
   - `Compact`：无标题精简窗口，图片区贴回截图选区，底部预留悬浮核心按钮区。
 - `STranslate/Core/Screenshot.cs`
   - `GetScreenshotCaptureAsync()`：调用 `ScreenGrabber.CaptureWithRegionAsync`，截图时直接回传选区物理坐标，无需事后反推。
+  - 精简窗口模式下传 `padImage: false`，关闭 ScreenGrab 对 <64px 小截图的背景画布 padding 扩展，保证 `bitmap.Size == 选区物理尺寸`，避免贴回时 Viewbox 把 padding 图缩放导致原始内容缩小；其他窗口模式保留默认 padding 行为。
 - `STranslate/Core/OcrLayoutAnalyzer.cs`
   - `AnalyzeBlocks(OcrResult, LayoutAnalysisMode)`：分段逻辑入口。
   - `Auto` / `Provider` / `Smart` / `NoMerge`：图片翻译分段策略。
