@@ -1113,8 +1113,6 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private async Task ImageTranslateAsync()
     {
-        CloseImageTranslateWindows();
-
         var ocrPlugin = GetImageTranslateOcrSvcAndNotify();
         if (ocrPlugin == null)
             return;
@@ -1128,16 +1126,21 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
             return;
         }
 
-
-        using var captureResult = await _screenshot.GetScreenshotCaptureAsync();
-        await ImageTranslateHandlerAsync(captureResult?.Bitmap, ocrPlugin, captureResult?.PhysicalBounds);
+        var existingWindows = Application.Current.Windows
+            .OfType<Window>()
+            .Where(w => w is ImageTranslateWindow or ImageTranslateCompactWindow)
+            .ToList();
+        var ocr = ocrPlugin;
+        await ExecuteWithWindowsHiddenAsync(existingWindows, async () =>
+        {
+            using var captureResult = await _screenshot.GetScreenshotCaptureAsync();
+            await ImageTranslateHandlerAsync(captureResult?.Bitmap, ocr, captureResult?.PhysicalBounds);
+        });
     }
 
     public async Task ImageTranslateHandlerAsync(Bitmap? bitmap, IOcrPlugin? ocrPlugin = default, Rectangle? physicalBounds = default)
     {
         if (bitmap == null) return;
-
-        CloseImageTranslateWindows();
 
         ocrPlugin ??= GetImageTranslateOcrSvcAndNotify();
         if (ocrPlugin == null)
@@ -1167,8 +1170,12 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
         if (GetOcrSvcAndNotify() == null)
             return;
 
-        using var bitmap = await _screenshot.GetScreenshotAsync();
-        await OcrHandlerAsync(bitmap);
+        var existingWindow = Application.Current.Windows.OfType<OcrWindow>().FirstOrDefault();
+        await ExecuteWithWindowsHiddenAsync(existingWindow, async () =>
+        {
+            using var bitmap = await _screenshot.GetScreenshotAsync();
+            await OcrHandlerAsync(bitmap);
+        });
     }
 
     public async Task OcrHandlerAsync(Bitmap? bitmap)
@@ -1184,8 +1191,12 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
         if (GetOcrSvcAndNotify() == null)
             return;
 
-        using var bitmap = await _screenshot.GetScreenshotAsync();
-        await QrCodeHandlerAsync(bitmap);
+        var existingWindow = Application.Current.Windows.OfType<OcrWindow>().FirstOrDefault();
+        await ExecuteWithWindowsHiddenAsync(existingWindow, async () =>
+        {
+            using var bitmap = await _screenshot.GetScreenshotAsync();
+            await QrCodeHandlerAsync(bitmap);
+        });
     }
 
     public async Task QrCodeHandlerAsync(Bitmap? bitmap)
@@ -1272,15 +1283,31 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
         return svc;
     }
 
-    private static void CloseImageTranslateWindows()
-    {
-        var windows = Application.Current.Windows
-            .OfType<Window>()
-            .Where(window => window is ImageTranslateWindow or ImageTranslateCompactWindow)
-            .ToList();
+    /// <summary>
+    /// 临时隐藏指定窗口，执行操作后恢复显示（无论成功、失败或用户取消截图）。
+    /// 用于截图前隐藏已开的结果窗口，避免其遮挡截图选区；
+    /// 操作结束后由 <see cref="SingletonWindowOpener"/> 复用同一窗口显示新结果，
+    /// 此处 <see cref="Window.Show()"/> 对已可见窗口为空操作，安全。
+    /// </summary>
+    private static Task ExecuteWithWindowsHiddenAsync(Window? window, Func<Task> action)
+        => ExecuteWithWindowsHiddenAsync(window == null ? [] : new[] { window }, action);
 
-        foreach (var window in windows)
-            window.Close();
+    private static async Task ExecuteWithWindowsHiddenAsync(
+        IEnumerable<Window?> windows,
+        Func<Task> action)
+    {
+        var toHide = windows.Where(w => w != null).Cast<Window>().ToList();
+        foreach (var w in toHide)
+            w.Hide();
+        try
+        {
+            await action();
+        }
+        finally
+        {
+            foreach (var w in toHide)
+                w.Show();
+        }
     }
 
     #endregion
