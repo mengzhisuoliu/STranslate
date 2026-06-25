@@ -173,6 +173,28 @@ public partial class ImageTranslateCompactWindow
             bounds.Left + bounds.Width / 2,
             bounds.Top + bounds.Height / 2);
 
+    /// <summary>
+    /// 获取包含指定物理坐标的屏幕工作区（物理像素）。
+    /// MonitorInfo.Bounds/WorkingArea 直接来自 Win32 RECT，本身就是物理像素，无需 DPI 换算。
+    /// </summary>
+    private static DrawingRectangle GetPhysicalWorkArea(int physicalX, int physicalY)
+    {
+        var monitor = MonitorInfo.GetDisplayMonitors()
+            .FirstOrDefault(m =>
+            {
+                var b = m.Bounds;
+                return physicalX >= b.X && physicalX < b.X + b.Width
+                    && physicalY >= b.Y && physicalY < b.Y + b.Height;
+            }) ?? MonitorInfo.GetPrimaryDisplayMonitor();
+
+        var w = monitor.WorkingArea;
+        return new DrawingRectangle(
+            (int)Math.Round(w.X),
+            (int)Math.Round(w.Y),
+            (int)Math.Round(w.Width),
+            (int)Math.Round(w.Height));
+    }
+
     private void OnImageContextMenuOpened(object sender, RoutedEventArgs e) => _isContextMenuOpen = true;
 
     private void OnImageContextMenuClosed(object sender, RoutedEventArgs e)
