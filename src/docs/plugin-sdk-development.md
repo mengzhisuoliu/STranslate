@@ -115,6 +115,7 @@
 - `STranslate.Plugin/Service.cs`
 - `Plugins/STranslate.Plugin.Translate.OpenAI/Main.cs`
 - `Plugins/STranslate.Plugin.Ocr.OpenAI/Main.cs`
+- `Plugins/STranslate.Plugin.Ocr.OcrSpace/Main.cs`
 - `Plugins/STranslate.Plugin.Tts.MicrosoftEdge/Main.cs`
 - `Plugins/STranslate.Plugin.Vocabulary.Eudict/Main.cs`
 

@@ -41,6 +41,7 @@
     <Project Path="Plugins/STranslate.Plugin.Ocr.Google/STranslate.Plugin.Ocr.Google.csproj" />
     <Project Path="Plugins/STranslate.Plugin.Ocr.Tencent/STranslate.Plugin.Ocr.Tencent.csproj" />
     <Project Path="Plugins/STranslate.Plugin.Ocr.Youdao/STranslate.Plugin.Ocr.Youdao.csproj" />
+    <Project Path="Plugins/STranslate.Plugin.Ocr.OcrSpace/STranslate.Plugin.Ocr.OcrSpace.csproj" />
 
     <!-- 其他插件 -->
     <Project Path="Plugins/STranslate.Plugin.Tts.MicrosoftEdge/STranslate.Plugin.Tts.MicrosoftEdge.csproj" />
