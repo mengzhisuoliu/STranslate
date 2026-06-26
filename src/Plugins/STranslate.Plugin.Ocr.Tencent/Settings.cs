@@ -2,7 +2,7 @@ namespace STranslate.Plugin.Ocr.Tencent;
 
 public class Settings
 {
-    public TencentOCRAction Action { get; set; } = TencentOCRAction.GeneralBasicOCR;
+    public TencentOCRAction Action { get; set; } = TencentOCRAction.GeneralAccurateOCR;
     public string SecretId { get; set; } = string.Empty;
     public string SecretKey { get; set; } = string.Empty;
 }
