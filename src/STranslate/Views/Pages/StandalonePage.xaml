@@ -139,6 +139,59 @@
                         SelectedValue="{Binding Settings.LayoutAnalysisMode}"
                         SelectedValuePath="Value" />
                 </ui:SettingsCard>
+
+                <ui:SettingsExpander Header="{DynamicResource Standalone_ImTranLanguageDetector}">
+                    <ui:SettingsExpander.HeaderIcon>
+                        <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.SlideSearch_20_Regular}" />
+                    </ui:SettingsExpander.HeaderIcon>
+                    <ComboBox
+                        DisplayMemberPath="Display"
+                        ItemsSource="{Binding DataProvider.LanguageDetectors}"
+                        SelectedValue="{Binding Settings.ImageTranslateLanguageDetector}"
+                        SelectedValuePath="Value" />
+
+                    <ui:SettingsExpander.Items>
+                        <ui:SettingsCard
+                            Description="{DynamicResource Standalone_ImTranLocalDetectorDescription}"
+                            Header="{DynamicResource Standalone_ImTranLocalDetector}"
+                            Visibility="{Binding Settings.ImageTranslateLanguageDetector, Converter={cnvt:LanguageDetectorTypeVisibilityConverter}, ConverterParameter=Local}">
+                            <ikw:SimpleStackPanel Orientation="Horizontal" Spacing="12">
+                                <Slider
+                                    x:Name="PART_ImTranDetectorRate"
+                                    IsSnapToTickEnabled="True"
+                                    Maximum="0.99"
+                                    Minimum="0.01"
+                                    TickFrequency="0.01"
+                                    Value="{Binding Settings.ImageTranslateLocalDetectorRate}" />
+                                <TextBlock VerticalAlignment="Center" Text="{Binding ElementName=PART_ImTranDetectorRate, Path=Value, StringFormat={}{0:0.00}}" />
+                            </ikw:SimpleStackPanel>
+                        </ui:SettingsCard>
+
+                        <ui:SettingsCard Description="{DynamicResource Standalone_ImTranDefaultSourceLanguageDescription}" Header="{DynamicResource Standalone_ImTranDefaultSourceLanguage}">
+                            <ComboBox
+                                DisplayMemberPath="Display"
+                                ItemsSource="{Binding DataProvider.LangEnums}"
+                                SelectedValue="{Binding Settings.ImageTranslateSourceLangIfAuto}"
+                                SelectedValuePath="Value" />
+                        </ui:SettingsCard>
+
+                        <ui:SettingsCard Description="{DynamicResource Standalone_ImTranFirstLanguageDescription}" Header="{DynamicResource Standalone_ImTranFirstLanguage}">
+                            <ComboBox
+                                DisplayMemberPath="Display"
+                                ItemsSource="{Binding DataProvider.LangEnums}"
+                                SelectedValue="{Binding Settings.ImageTranslateFirstLanguage}"
+                                SelectedValuePath="Value" />
+                        </ui:SettingsCard>
+
+                        <ui:SettingsCard Description="{DynamicResource Standalone_ImTranSecondLanguageDescription}" Header="{DynamicResource Standalone_ImTranSecondLanguage}">
+                            <ComboBox
+                                DisplayMemberPath="Display"
+                                ItemsSource="{Binding DataProvider.LangEnums}"
+                                SelectedValue="{Binding Settings.ImageTranslateSecondLanguage}"
+                                SelectedValuePath="Value" />
+                        </ui:SettingsCard>
+                    </ui:SettingsExpander.Items>
+                </ui:SettingsExpander>
                 <!--#endregion-->
             </ikw:SimpleStackPanel>
         </ui:ScrollViewerEx>
