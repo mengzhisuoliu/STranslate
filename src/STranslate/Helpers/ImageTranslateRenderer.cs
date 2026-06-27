@@ -17,6 +17,45 @@ internal static class ImageTranslateRenderer
     private const double SupersampleMinDimension = 1000;
     private const double SupersampleMaxScale = 4.0;
     private const double SupersampleMinScale = 2.0;
+    // 超采样后结果图的最大像素总数，超出则按比例降低 scaleFactor，避免生成过大的 RenderTargetBitmap
+    private const long SupersampleMaxPixelBudget = 8L * 1024 * 1024; // 8MP
+
+    /// <summary>
+    /// 根据原图像素尺寸计算超采样缩放因子与渲染目标尺寸。
+    /// 小图（最小边 &lt; <see cref="SupersampleMinDimension"/>）放大到 [MinScale, MaxScale] 区间；
+    /// 放大后总像素超过 <see cref="SupersampleMaxPixelBudget"/> 时按面积比例降采样。
+    /// </summary>
+    /// <param name="pixelWidth">原图像素宽</param>
+    /// <param name="pixelHeight">原图像素高</param>
+    /// <returns>(scaleFactor, renderWidth, renderHeight)</returns>
+    internal static (double ScaleFactor, int RenderWidth, int RenderHeight) ComputeSupersampleScale(
+        int pixelWidth, int pixelHeight)
+    {
+        double scaleFactor = 1.0;
+        double minDimension = Math.Min(pixelWidth, pixelHeight);
+
+        if (minDimension < SupersampleMinDimension)
+        {
+            scaleFactor = Math.Min(SupersampleMaxScale, SupersampleMinDimension / minDimension);
+            scaleFactor = Math.Max(scaleFactor, SupersampleMinScale);
+        }
+
+        int renderWidth = (int)(pixelWidth * scaleFactor);
+        int renderHeight = (int)(pixelHeight * scaleFactor);
+
+        // 像素预算保护：超采样后总像素超过预算时按面积比例降低 scaleFactor，
+        // 避免极端尺寸的图生成过大的 RenderTargetBitmap 造成内存峰值
+        long totalPixels = (long)renderWidth * renderHeight;
+        if (totalPixels > SupersampleMaxPixelBudget)
+        {
+            var budgetScale = Math.Sqrt((double)SupersampleMaxPixelBudget / totalPixels);
+            scaleFactor *= budgetScale;
+            renderWidth = (int)(pixelWidth * scaleFactor);
+            renderHeight = (int)(pixelHeight * scaleFactor);
+        }
+
+        return (scaleFactor, renderWidth, renderHeight);
+    }
 
     /// <summary>
     /// 生成带有翻译文本覆盖的图像。
@@ -46,22 +85,10 @@ internal static class ImageTranslateRenderer
 
         // ---------------------------------------------------------
         // 修复：针对小图进行超采样渲染 (Super-sampling)
-        // 如果图片较小，强制放大渲染尺寸，以保证文字矢量绘制的清晰度
+        // 如果图片较小，强制放大渲染尺寸，以保证文字矢量绘制的清晰度；
+        // 放大后总像素超过预算时降采样，避免生成过大的 RenderTargetBitmap。
         // ---------------------------------------------------------
-        double scaleFactor = 1.0;
-        double minDimension = Math.Min(image.PixelWidth, image.PixelHeight);
-
-        // 最小边小于阈值时按比例放大，但限制在 [MinScale, MaxScale] 区间
-        if (minDimension < SupersampleMinDimension)
-        {
-            scaleFactor = Math.Min(SupersampleMaxScale, SupersampleMinDimension / minDimension);
-            // 确保至少放大 MinScale 倍以获得较好的抗锯齿效果
-            scaleFactor = Math.Max(scaleFactor, SupersampleMinScale);
-        }
-
-        // 计算渲染目标尺寸
-        int renderWidth = (int)(image.PixelWidth * scaleFactor);
-        int renderHeight = (int)(image.PixelHeight * scaleFactor);
+        var (scaleFactor, renderWidth, renderHeight) = ComputeSupersampleScale(image.PixelWidth, image.PixelHeight);
 
         var measureTextBrush = new SolidColorBrush(Colors.Black);
         measureTextBrush.Freeze();

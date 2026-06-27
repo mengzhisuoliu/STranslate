@@ -488,3 +488,86 @@ public class ImageTranslateTextOverlayLayoutTests
         new((float)left, (float)(top + height))
     ];
 }
+
+/// <summary>
+/// 超采样缩放因子与像素预算计算的单测。
+/// </summary>
+public class ImageTranslateRendererSupersampleTests
+{
+    /// <summary>
+    /// 小图（最小边 &lt; 1000）应放大到至少 MinScale(2.0)，
+    /// 且不超过 MaxScale(4.0)。
+    /// </summary>
+    [Fact]
+    public void SmallImage_AmplifiesToAtLeastMinScale()
+    {
+        // 200x150，最小边 150，理论放大 1000/150≈6.67，应被 MaxScale 钳到 4.0
+        var (scale, w, h) = ImageTranslateRenderer.ComputeSupersampleScale(200, 150);
+        Assert.Equal(4.0, scale, precision: 2);
+        Assert.Equal(800, w);
+        Assert.Equal(600, h);
+    }
+
+    /// <summary>
+    /// 大图（最小边 ≥ 1000）不放大，scaleFactor 保持 1.0。
+    /// </summary>
+    [Fact]
+    public void LargeImage_DoesNotAmplify()
+    {
+        var (scale, w, h) = ImageTranslateRenderer.ComputeSupersampleScale(1920, 1080);
+        Assert.Equal(1.0, scale, precision: 2);
+        Assert.Equal(1920, w);
+        Assert.Equal(1080, h);
+    }
+
+    /// <summary>
+    /// 超采样后总像素超过预算(8MP)时，应按面积比例降低 scaleFactor，
+    /// 使结果图总像素不超过预算。
+    /// </summary>
+    [Fact]
+    public void OversizedAmplification_CappedByPixelBudget()
+    {
+        // 构造一个会触发预算保护的场景：
+        // 500x500 最小边 500 → 放大 1000/500=2.0（恰为 MinScale）→ 1000x1000=1MP，未超预算。
+        // 要触发预算，需更大的小图放大后超 8MP：
+        // 1500x1500 最小边 1500 ≥1000 不放大 → 不触发。
+        // 改用 700x700：最小边 700 <1000 → 放大 1000/700≈1.43，但会被 MinScale 抬到 2.0
+        //   → 1400x1400=1.96MP，仍未超。
+        // 真正触发需要中等尺寸 + 高 MaxScale：900x900 最小边 900<1000 → 1000/900≈1.11，
+        //   MinScale 抬到 2.0 → 1800x1800=3.24MP，未超。
+        // 直接验证边界：预算为 8MP，构造放大后恰超预算的输入。
+        // 用 2048x2048 不放大不触发；要让放大后超 8MP，需原图较小且放大后大：
+        //   1024x1024 最小边 1024≥1000 不放大 → 不触发。
+        // 结论：现有 [MinScale=2, MaxScale=4] + MinDimension=1000 的组合下，
+        //   放大后最大像素 = 1000*4 × 1000*4 = 4000x4000 = 16MP（当原图最小边接近 1000 时
+        //   不会被放大；最小边很小时放大后仍小）。真正会超 8MP 的是原图最小边在
+        //   (200, 1000) 且放大后超 8MP 的区间。例如 500x500 放大 2x → 1000x1000=1MP 不超。
+        //   要稳定触发预算，需原图约 700x3500 这种极端纵横比放大后超预算。
+        // 这里用一个明确会超预算的构造：原图 600x6000，最小边 600<1000 → 放大 1000/600≈1.67
+        //   被 MinScale 抬到 2.0 → 1200x12000=14.4MP > 8MP → 触发预算降采样。
+        var (scale, w, h) = ImageTranslateRenderer.ComputeSupersampleScale(600, 6000);
+        long totalPixels = (long)w * h;
+        const long budget = 8L * 1024 * 1024;
+        Assert.True(totalPixels <= budget,
+            $"放大后总像素 {totalPixels} 应不超过预算 {budget}，实际 scale={scale} {w}x{h}");
+        // 降采样后 scaleFactor 应低于原始放大因子 2.0
+        Assert.True(scale < 2.0, $"应已降采样，scale={scale} 应低于 2.0");
+    }
+
+    /// <summary>
+    /// 常规截图（最小边略低于阈值）会放大但不触发预算降采样，
+    /// 因为放大后总像素仍在 8MP 预算内。
+    /// </summary>
+    [Fact]
+    public void NormalScreenshot_AmplifiesButStaysWithinBudget()
+    {
+        // 1920x900 最小边 900<1000 → 放大 1000/900≈1.11 被 MinScale 抬到 2.0
+        //   → 3840x1800=6.9MP < 8MP，不触发预算降采样
+        var (scale, w, h) = ImageTranslateRenderer.ComputeSupersampleScale(1920, 900);
+        Assert.Equal(2.0, scale, precision: 2);
+        Assert.Equal(3840, w);
+        Assert.Equal(1800, h);
+        long totalPixels = (long)w * h;
+        Assert.True(totalPixels <= 8L * 1024 * 1024);
+    }
+}
