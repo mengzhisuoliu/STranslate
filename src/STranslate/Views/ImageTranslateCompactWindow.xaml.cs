@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using STranslate.Core;
 using STranslate.Helpers;
 using STranslate.ViewModels;
@@ -27,6 +28,10 @@ public partial class ImageTranslateCompactWindow
     private const double WindowMargin = 8;
 
     private readonly ImageTranslateWindowViewModel _viewModel;
+    // 独立 DI scope：从 root container 解析 Transient + IDisposable 的 ViewModel 会被
+    // root scope 的 _disposables 列表永久持有（每次精简窗口新建一个 VM 即累积一个无法回收）。
+    // 用独立 scope 解析并在窗口关闭时释放，使 VM 脱离 root 跟踪、可被 GC 回收。
+    private readonly IServiceScope _serviceScope;
     private bool _isContextMenuOpen;
     private bool _isToolbarDropDownOpen;
     private bool _isClosing;
@@ -35,7 +40,8 @@ public partial class ImageTranslateCompactWindow
 
     public ImageTranslateCompactWindow()
     {
-        _viewModel = Ioc.Default.GetRequiredService<ImageTranslateWindowViewModel>();
+        _serviceScope = Ioc.Default.CreateScope();
+        _viewModel = _serviceScope.ServiceProvider.GetRequiredService<ImageTranslateWindowViewModel>();
         DataContext = _viewModel;
 
         InitializeComponent();
@@ -93,6 +99,8 @@ public partial class ImageTranslateCompactWindow
         DetachVisualTree();
 
         _viewModel.Dispose();
+        // 释放独立 DI scope，使 VM 从 root container 的 disposable 跟踪列表移除，可被 GC 回收
+        _serviceScope.Dispose();
         base.OnClosed(e);
     }
 
