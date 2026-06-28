@@ -48,6 +48,8 @@ public partial class OcrWindow
         {
             try
             {
+                // VM 由独立 DI scope 持有，释放 scope 会触发 ViewModel.Dispose()，
+                // 取消对 OcrService/Settings 等单例的事件订阅。
                 _serviceScope.Dispose();
             }
             finally

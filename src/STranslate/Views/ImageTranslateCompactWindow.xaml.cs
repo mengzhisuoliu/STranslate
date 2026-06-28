@@ -28,9 +28,10 @@ public partial class ImageTranslateCompactWindow
     private const double WindowMargin = 8;
 
     private readonly ImageTranslateWindowViewModel _viewModel;
-    // 独立 DI scope：从 root container 解析 Transient + IDisposable 的 ViewModel 会被
-    // root scope 的 _disposables 列表永久持有（每次精简窗口新建一个 VM 即累积一个无法回收）。
-    // 用独立 scope 解析并在窗口关闭时释放，使 VM 脱离 root 跟踪、可被 GC 回收。
+    // 独立 DI scope：从 root provider 直接解析 Transient + IDisposable 的 ViewModel 不会被
+    // 任何 scope 跟踪，其 Dispose()（取消对 OcrService/TranslateService/Settings 等单例的事件订阅）
+    // 永不触发，单例通过事件委托反向持有 VM 导致泄漏。用独立 scope 解析并在窗口关闭时释放，
+    // 确保 Dispose() 执行、VM 可被 GC 回收。
     private readonly IServiceScope _serviceScope;
     private bool _isContextMenuOpen;
     private bool _isToolbarDropDownOpen;
@@ -93,37 +94,14 @@ public partial class ImageTranslateCompactWindow
 
     protected override void OnClosed(EventArgs e)
     {
-        // 主动拆解视觉树：移除 NoticeBar、SnackbarContainer 等控件并清空 Content，
+        // 主动拆解视觉树：移除 NoticeBar、SnackbarContainer 等控件并清空 Content、InputBindings，
         // 断开 WPF 静态 PropertyDescriptor._propertyMap 通过 PropertyChangeTracker
         // 对窗口内部控件的锚定，避免已关闭窗口被静态缓存钉死无法 GC。
-        DetachVisualTree();
+        ModernWindowLifecycle.DetachVisualTree(this);
 
         // VM 由独立 DI scope 持有，只释放 scope，避免重复调用 ViewModel.Dispose()。
         _serviceScope.Dispose();
         base.OnClosed(e);
-    }
-
-    /// <summary>
-    /// 拆解精简窗口视觉树并释放控件引用。
-    /// 精简窗口每次截图翻译都会新建并关闭，若不主动断开 NoticeBar/SnackbarContainer 等
-    /// 控件与窗口的连接，WPF 属性描述符静态表会通过 PropertyChangeTracker 反向持有窗口，
-    /// 导致整窗（含 BitmapSource 原生帧缓冲）无法回收。
-    /// </summary>
-    private void DetachVisualTree()
-    {
-        if (Content is Panel panel)
-        {
-            // 清除每个子元素的数据上下文，断开控件到 VM 的引用
-            for (int i = panel.Children.Count - 1; i >= 0; i--)
-            {
-                panel.Children[i].ClearValue(FrameworkElement.DataContextProperty);
-            }
-            panel.Children.Clear();
-        }
-
-        // 解除数据上下文与内容，断开 VM ↔ 视图的双向引用
-        DataContext = null;
-        Content = null;
     }
 
     private void PlaceOnPhysicalBounds(DrawingRectangle bounds)

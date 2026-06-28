@@ -47,8 +47,10 @@ public partial class ImageTranslateWindow
         {
             try
             {
-                // VM 由独立 DI scope 持有，只释放 scope，避免 root provider 跟踪
-                // Transient + IDisposable 的 VM 并将其保留到应用退出。
+                // VM 由独立 DI scope 持有，释放 scope 会触发 ViewModel.Dispose()，
+                // 取消对 OcrService/TranslateService/Settings 等单例的事件订阅。
+                // 直接从 root provider 解析 Transient 不被跟踪、Dispose 永不触发，
+                // 单例会通过事件委托反向持有 VM 导致泄漏。
                 _serviceScope.Dispose();
             }
             finally
