@@ -105,6 +105,57 @@ public class OcrWordBuilderTests
     }
 
     [Fact]
+    public void VisualLineRangeIncludesAllBlocksOnTheSameOcrRow()
+    {
+        var contents = new[]
+        {
+            new OcrContent
+            {
+                Text = "Hello",
+                BoxPoints = Box(0, 0, 50, 10)
+            },
+            new OcrContent
+            {
+                Text = "World",
+                BoxPoints = Box(70, 0, 50, 10)
+            },
+            new OcrContent
+            {
+                Text = "Next",
+                BoxPoints = Box(0, 30, 40, 10)
+            }
+        };
+
+        var words = OcrWordBuilder.CreateFromOcrContents(contents);
+        var anchorWord = words.First(word => word.Text == "W");
+
+        Assert.Equal("Hello World", GetVisualLineText(words, anchorWord));
+    }
+
+    [Fact]
+    public void VisualLineRangeExcludesAdjacentOcrRowsAndLineBreaks()
+    {
+        var contents = new[]
+        {
+            new OcrContent
+            {
+                Text = "Top",
+                BoxPoints = Box(0, 0, 30, 10)
+            },
+            new OcrContent
+            {
+                Text = "Bottom",
+                BoxPoints = Box(0, 30, 60, 10)
+            }
+        };
+
+        var words = OcrWordBuilder.CreateFromOcrContents(contents);
+        var anchorWord = words.First(word => word.Text == "B");
+
+        Assert.Equal("Bottom", GetVisualLineText(words, anchorWord));
+    }
+
+    [Fact]
     public void CreateFromFormattedTextUsesHighlightGeometryAndScaleFactor()
     {
         const double scaleFactor = 2;
@@ -163,7 +214,60 @@ public class OcrWordBuilderTests
         Assert.Equal([0, 1, 2], words.Select(word => word.StartIndexInFullText));
     }
 
-    private static FormattedText CreateFormattedText(string text, double maxWidth)
+    [Fact]
+    public void VisualLineRangeUsesFormattedTextWrapping()
+    {
+        const string text = "Alpha Beta Gamma";
+        var formattedText = CreateFormattedText(text, maxWidth: 60, maxHeight: 200);
+        var wordGroup = OcrWordBuilder.CreateFromFormattedText(
+            text,
+            formattedText,
+            new Point(0, 0),
+            new Rect(0, 0, 60, 200),
+            scaleFactor: 1);
+
+        var words = OcrWordBuilder.CreateIndexedCollectionFromGroups([wordGroup]);
+        var visualLines = words
+            .Where(word => word.VisualLineIndex >= 0)
+            .GroupBy(word => word.VisualLineIndex)
+            .ToList();
+
+        Assert.True(visualLines.Count > 1);
+        var secondLineWords = visualLines[1].ToList();
+        var selectedText = GetVisualLineText(words, secondLineWords[0]);
+        Assert.Equal(string.Concat(secondLineWords.Select(word => word.Text)), selectedText);
+        Assert.NotEqual(text, selectedText);
+    }
+
+    [Fact]
+    public void VisualLineRangeKeepsIndependentOverlayGroupsSeparate()
+    {
+        IEnumerable<OcrWord>[] wordGroups =
+        [
+            [new OcrWord { Text = "Left", BoundingBox = new Rect(0, 0, 40, 10) }],
+            [new OcrWord { Text = "Right", BoundingBox = new Rect(60, 0, 50, 10) }]
+        ];
+
+        var words = OcrWordBuilder.CreateIndexedCollectionFromGroups(wordGroups);
+
+        Assert.NotEqual(words[0].VisualLineIndex, words[1].VisualLineIndex);
+        Assert.Equal("Left", GetVisualLineText(words, words[0]));
+        Assert.Equal("Right", GetVisualLineText(words, words[1]));
+    }
+
+    private static string GetVisualLineText(IReadOnlyList<OcrWord> words, OcrWord anchorWord)
+    {
+        Assert.True(OcrWordSelection.TryGetVisualLineRange(
+            words,
+            anchorWord,
+            out var startIndex,
+            out var endIndex));
+
+        var fullText = string.Concat(words.Select(word => word.Text));
+        return fullText.Substring(startIndex, endIndex - startIndex + 1);
+    }
+
+    private static FormattedText CreateFormattedText(string text, double maxWidth, double maxHeight = 40)
     {
         var formattedText = new FormattedText(
             text,
@@ -175,7 +279,7 @@ public class OcrWordBuilderTests
             1);
 
         formattedText.MaxTextWidth = maxWidth;
-        formattedText.MaxTextHeight = 40;
+        formattedText.MaxTextHeight = maxHeight;
         return formattedText;
     }
 

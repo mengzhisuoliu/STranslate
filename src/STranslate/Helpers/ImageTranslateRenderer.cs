@@ -38,15 +38,15 @@ internal static class ImageTranslateRenderer
             .Select(item => item!)
             .ToList();
 
-        var selectableWords = OcrWordBuilder.CreateIndexedCollection(
-            overlays.SelectMany(overlay =>
+        // 独立覆盖块可能恰好等高，分组可避免双击时把它们误判为同一视觉行。
+        var selectableWords = OcrWordBuilder.CreateIndexedCollectionFromGroups(
+            overlays.Select(overlay =>
                 OcrWordBuilder.CreateFromFormattedText(
                     overlay.Text,
                     overlay.FormattedText,
                     overlay.TextPosition,
                     overlay.Plan.TextClipRect,
-                    scaleFactor: 1)),
-            preserveOrder: true);
+                    scaleFactor: 1)));
 
         return new ImageTranslateOverlayDocument(
             overlays.ToArray(),

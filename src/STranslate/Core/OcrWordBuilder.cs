@@ -110,13 +110,30 @@ internal static class OcrWordBuilder
                 .ToList();
         }
 
-        var currentIndex = 0;
-        foreach (var word in indexedWords)
+        var nextVisualLineIndex = 0;
+        AssignVisualLineIndexes(indexedWords, ref nextVisualLineIndex);
+        AssignTextIndexes(indexedWords);
+
+        return new ObservableCollection<OcrWord>(indexedWords);
+    }
+
+    public static ObservableCollection<OcrWord> CreateIndexedCollectionFromGroups(
+        IEnumerable<IEnumerable<OcrWord>> wordGroups)
+    {
+        var indexedWords = new List<OcrWord>();
+        var nextVisualLineIndex = 0;
+        foreach (var wordGroup in wordGroups)
         {
-            word.StartIndexInFullText = currentIndex;
-            currentIndex += word.Text.Length;
+            var groupWords = wordGroup
+                .Where(word => !string.IsNullOrEmpty(word.Text) &&
+                               (IsSelectableBounds(word.BoundingBox) || word.BoundingBox.IsEmpty))
+                .ToList();
+
+            AssignVisualLineIndexes(groupWords, ref nextVisualLineIndex);
+            indexedWords.AddRange(groupWords);
         }
 
+        AssignTextIndexes(indexedWords);
         return new ObservableCollection<OcrWord>(indexedWords);
     }
 
@@ -174,6 +191,39 @@ internal static class OcrWordBuilder
 
     private static bool IsSelectableBounds(Rect rect) =>
         !rect.IsEmpty && rect.Width > 0 && rect.Height > 0;
+
+    private static void AssignVisualLineIndexes(
+        IReadOnlyList<OcrWord> words,
+        ref int nextVisualLineIndex)
+    {
+        OcrWord? previousSelectableWord = null;
+        var currentVisualLineIndex = -1;
+        foreach (var word in words)
+        {
+            word.VisualLineIndex = -1;
+            if (!IsSelectableBounds(word.BoundingBox))
+                continue;
+
+            if (previousSelectableWord == null ||
+                IsNextLine(previousSelectableWord.BoundingBox, word.BoundingBox))
+            {
+                currentVisualLineIndex = nextVisualLineIndex++;
+            }
+
+            word.VisualLineIndex = currentVisualLineIndex;
+            previousSelectableWord = word;
+        }
+    }
+
+    private static void AssignTextIndexes(IReadOnlyList<OcrWord> words)
+    {
+        var currentIndex = 0;
+        foreach (var word in words)
+        {
+            word.StartIndexInFullText = currentIndex;
+            currentIndex += word.Text.Length;
+        }
+    }
 
     private sealed record OcrTextBlock(string Text, Rect BoundingBox);
 }
