@@ -390,6 +390,7 @@ public class Internationalization(ILogger<Internationalization> logger, PluginMa
 internal static class AvailableLanguages
 {
     public static I18nPair English = new("en", "English");
+    public static I18nPair Turkish = new("tr-tr", "Türkçe");
     public static I18nPair Chinese = new("zh-cn", "中文");
     public static I18nPair Chinese_TW = new("zh-tw", "中文（繁体）");
     public static I18nPair Japanese = new("ja", "日本語");
@@ -400,6 +401,7 @@ internal static class AvailableLanguages
         List<I18nPair> languages =
         [
             English,
+            Turkish,
             Chinese,
             Chinese_TW,
             Japanese,
@@ -407,12 +409,15 @@ internal static class AvailableLanguages
         ];
         return languages;
     }
+}
+    }
 
     public static string GetSystemTranslation(string languageCode)
     {
         return languageCode switch
         {
             "en" => "System",
+            "tr-tr" => "Sistem",
             "zh-cn" => "系统",
             "zh-tw" => "系統",
             "ja" => "システム",
