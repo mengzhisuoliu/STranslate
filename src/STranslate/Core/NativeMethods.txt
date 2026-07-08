@@ -68,3 +68,9 @@ ShowWindow
 BringWindowToTop
 
 RegisterWindowMessage
+
+SetWinEventHook
+UnhookWinEvent
+WINEVENTPROC
+EVENT_SYSTEM_FOREGROUND
+WINEVENT_OUTOFCONTEXT

@@ -3,11 +3,12 @@ using Microsoft.Extensions.Logging;
 using STranslate.Core;
 using STranslate.Helpers;
 using STranslate.ViewModels;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Threading;
 using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.Accessibility;
 using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace STranslate.Views;
@@ -15,8 +16,6 @@ namespace STranslate.Views;
 public partial class MainWindow : IDisposable
 {
     private const int WmNcHitTest = 0x0084;
-    private const uint EventSystemForeground = 0x0003;
-    private const uint WinEventOutOfContext = 0x0000;
 
     private static readonly IntPtr HtClient = new(1);
     private static readonly IntPtr HtLeft = new(10);
@@ -25,10 +24,10 @@ public partial class MainWindow : IDisposable
     private readonly MainWindowViewModel _viewModel;
     private readonly Settings _settings;
     private readonly ILogger<MainWindow> _logger;
-    private readonly WinEventProc _foregroundChangedProc;
+    private readonly WINEVENTPROC _foregroundChangedProc;
     private bool _disposed = false;
     private HwndSource? _hwndSource;
-    private nint _foregroundChangedHook;
+    private HWINEVENTHOOK _foregroundChangedHook;
 
     public MainWindow()
     {
@@ -106,19 +105,19 @@ public partial class MainWindow : IDisposable
 
     private void RegisterForegroundChangedHook()
     {
-        if (_foregroundChangedHook != 0)
+        if (!_foregroundChangedHook.IsNull)
             return;
 
-        _foregroundChangedHook = SetWinEventHook(
-            EventSystemForeground,
-            EventSystemForeground,
-            0,
+        _foregroundChangedHook = PInvoke.SetWinEventHook(
+            PInvoke.EVENT_SYSTEM_FOREGROUND,
+            PInvoke.EVENT_SYSTEM_FOREGROUND,
+            HMODULE.Null,
             _foregroundChangedProc,
             0,
             0,
-            WinEventOutOfContext);
+            PInvoke.WINEVENT_OUTOFCONTEXT);
 
-        if (_foregroundChangedHook == 0)
+        if (_foregroundChangedHook.IsNull)
         {
             _logger.LogWarning("Failed to register foreground changed hook.");
         }
@@ -126,25 +125,25 @@ public partial class MainWindow : IDisposable
 
     private void UnregisterForegroundChangedHook()
     {
-        if (_foregroundChangedHook == 0)
+        if (_foregroundChangedHook.IsNull)
             return;
 
-        if (!UnhookWinEvent(_foregroundChangedHook))
+        if (!PInvoke.UnhookWinEvent(_foregroundChangedHook))
             _logger.LogWarning("Failed to unregister foreground changed hook.");
 
-        _foregroundChangedHook = 0;
+        _foregroundChangedHook = HWINEVENTHOOK.Null;
     }
 
     private void OnForegroundChanged(
-        nint hWinEventHook,
+        HWINEVENTHOOK hWinEventHook,
         uint eventType,
-        nint hwnd,
+        HWND hwnd,
         int idObject,
         int idChild,
         uint dwEventThread,
         uint dwmsEventTime)
     {
-        Dispatcher.BeginInvoke(() => HandleForegroundChanged(hwnd), DispatcherPriority.Background);
+        Dispatcher.BeginInvoke(() => HandleForegroundChanged((nint)hwnd), DispatcherPriority.Background);
     }
 
     private void HandleForegroundChanged(nint foregroundWindowHandle)
@@ -160,28 +159,6 @@ public partial class MainWindow : IDisposable
 
         _viewModel.Hide();
     }
-
-    private delegate void WinEventProc(
-        nint hWinEventHook,
-        uint eventType,
-        nint hwnd,
-        int idObject,
-        int idChild,
-        uint dwEventThread,
-        uint dwmsEventTime);
-
-    [DllImport("user32.dll")]
-    private static extern nint SetWinEventHook(
-        uint eventMin,
-        uint eventMax,
-        nint hmodWinEventProc,
-        WinEventProc pfnWinEventProc,
-        uint idProcess,
-        uint idThread,
-        uint dwFlags);
-
-    [DllImport("user32.dll")]
-    private static extern bool UnhookWinEvent(nint hWinEventHook);
 
     private bool TryHandleHorizontalResizeHitTest(IntPtr lParam, out IntPtr hitTestResult)
     {
