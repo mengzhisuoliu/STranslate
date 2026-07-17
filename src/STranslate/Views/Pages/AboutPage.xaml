@@ -132,6 +132,14 @@
                                 plugin:PasswordBoxAssistant.Attach="True"
                                 plugin:PasswordBoxAssistant.Password="{Binding Settings.Backup.Password}" />
                         </ui:SettingsCard>
+                        <ui:SettingsCard
+                            Description="{DynamicResource WebDavBackupNoticeDescription}"
+                            Header="{DynamicResource WebDavBackupNotice}"
+                            Visibility="{Binding Settings.Backup.Type, Converter={cnvt:BackupTypeVisibilityConverter}, ConverterParameter=WebDav}">
+                            <ui:SettingsCard.HeaderIcon>
+                                <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.Info_24_Regular}" />
+                            </ui:SettingsCard.HeaderIcon>
+                        </ui:SettingsCard>
 
                         <ui:SettingsCard Header="{DynamicResource Backup}">
                             <Button Command="{Binding BackupCommand}" Content="{DynamicResource CreateBackup}" />

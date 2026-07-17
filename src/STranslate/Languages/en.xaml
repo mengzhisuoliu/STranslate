@@ -383,7 +383,7 @@
     <sys:String x:Key="ConfirmDeleteService">Are you sure you want to delete service '{0}'?</sys:String>
     <sys:String x:Key="Close">Close</sys:String>
     <sys:String x:Key="LogLevel">Log Level</sys:String>
-    <sys:String x:Key="ConfirmRestartAndBackup">Confirm restart and backup configuration?</sys:String>
+    <sys:String x:Key="ConfirmRestartAndBackup" xml:space="preserve">Confirm restart and back up the configuration?&#10;Compression may take longer when many plugins are installed. Do not start the application manually during compression. After restarting automatically, the application will continue uploading; keep it running until you receive the backup result notification.</sys:String>
     <sys:String x:Key="ConfirmRestartAndRestore">Confirm restart and restore configuration?</sys:String>
     <sys:String x:Key="SelectBackupFile">Select Backup File</sys:String>
     <sys:String x:Key="SelectRestoreFile">Select Restore File</sys:String>
@@ -392,6 +392,7 @@
     <sys:String x:Key="CheckConfigOrLog">Please check configuration or view logs</sys:String>
     <sys:String x:Key="BackupSuccess">Backup successful [{0}]</sys:String>
     <sys:String x:Key="BackupFailed">Backup failed, please check logs</sys:String>
+    <sys:String x:Key="BackupUploading">Uploading backup content. Please wait.</sys:String>
     <sys:String x:Key="DownloadSuccess">Download successful</sys:String>
     <sys:String x:Key="DownloadFailed">Download failed: {0} {1}</sys:String>
     <sys:String x:Key="DownloadException">Download exception: {0}</sys:String>
@@ -403,6 +404,8 @@
     <sys:String x:Key="WebDavAddress">WebDav Address</sys:String>
     <sys:String x:Key="WebDavUsername">WebDav Username</sys:String>
     <sys:String x:Key="WebDavPassword">WebDav Password</sys:String>
+    <sys:String x:Key="WebDavBackupNotice">WebDAV Backup Information</sys:String>
+    <sys:String x:Key="WebDavBackupNoticeDescription" xml:space="preserve">A WebDAV backup has two stages: compression and upload. Do not start the application manually during compression. After restarting automatically, the application will continue uploading; the process is complete when you receive the backup result notification.&#10;Compression may take longer when many plugins are installed.&#10;If the connection to your WebDAV service is unstable, increase the timeout under Settings → Network → HTTP Timeout.</sys:String>
     <sys:String x:Key="Backup">Backup</sys:String>
     <sys:String x:Key="CreateBackup">Create Backup</sys:String>
     <sys:String x:Key="Restore">Restore</sys:String>

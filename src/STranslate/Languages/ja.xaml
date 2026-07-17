@@ -375,7 +375,7 @@
     <sys:String x:Key="ConfirmDeleteService">本当にサービス '{0}' を削除しますか？</sys:String>
     <sys:String x:Key="Close">閉じる</sys:String>
     <sys:String x:Key="LogLevel">ログレベル</sys:String>
-    <sys:String x:Key="ConfirmRestartAndBackup">再起動して設定をバックアップしますか？</sys:String>
+    <sys:String x:Key="ConfirmRestartAndBackup" xml:space="preserve">再起動して設定をバックアップしますか？&#10;プラグインが多い場合、圧縮に時間がかかることがあります。圧縮中はアプリケーションを手動で起動しないでください。自動再起動後もアップロードが続くため、バックアップ結果の通知が届くまでアプリケーションを終了しないでください。</sys:String>
     <sys:String x:Key="ConfirmRestartAndRestore">再起動して設定を復元しますか？</sys:String>
     <sys:String x:Key="SelectBackupFile">バックアップファイルを選択</sys:String>
     <sys:String x:Key="SelectRestoreFile">復元ファイルを選択</sys:String>
@@ -384,6 +384,7 @@
     <sys:String x:Key="CheckConfigOrLog">設定を確認するかログを参照してください</sys:String>
     <sys:String x:Key="BackupSuccess">バックアップ成功 [{0}]</sys:String>
     <sys:String x:Key="BackupFailed">バックアップ失敗。ログを確認してください</sys:String>
+    <sys:String x:Key="BackupUploading">バックアップをアップロードしています。しばらくお待ちください。</sys:String>
     <sys:String x:Key="DownloadSuccess">ダウンロード成功</sys:String>
     <sys:String x:Key="DownloadFailed">ダウンロード失敗：{0} {1}</sys:String>
     <sys:String x:Key="DownloadException">ダウンロード例外：{0}</sys:String>
@@ -395,6 +396,8 @@
     <sys:String x:Key="WebDavAddress">WebDav アドレス</sys:String>
     <sys:String x:Key="WebDavUsername">WebDav ユーザー名</sys:String>
     <sys:String x:Key="WebDavPassword">WebDav パスワード</sys:String>
+    <sys:String x:Key="WebDavBackupNotice">WebDAV バックアップについて</sys:String>
+    <sys:String x:Key="WebDavBackupNoticeDescription" xml:space="preserve">WebDAV バックアップは圧縮とアップロードの2段階で行われます。圧縮中はアプリケーションを手動で起動しないでください。自動再起動後もアップロードが続き、バックアップ結果の通知が届くと処理は完了です。&#10;プラグインが多い場合、圧縮に時間がかかることがあります。&#10;WebDAV サービスへの接続が不安定な場合は、「設定 → ネットワーク → HTTP タイムアウト」でタイムアウト時間を長くしてください。</sys:String>
     <sys:String x:Key="Backup">バックアップ</sys:String>
     <sys:String x:Key="CreateBackup">バックアップ作成</sys:String>
     <sys:String x:Key="Restore">復元</sys:String>

@@ -385,7 +385,7 @@
     <sys:String x:Key="ConfirmDeleteService">確定要刪除服務 '{0}' 嗎？</sys:String>
     <sys:String x:Key="Close">關閉</sys:String>
     <sys:String x:Key="LogLevel">日誌等級</sys:String>
-    <sys:String x:Key="ConfirmRestartAndBackup">是否確認重啟並備份配置</sys:String>
+    <sys:String x:Key="ConfirmRestartAndBackup" xml:space="preserve">是否確認重啟並備份配置？&#10;外掛程式較多時壓縮可能需要較長時間。壓縮期間請勿手動啟動軟體；軟體自動重啟後將繼續上傳，請保持運行直至收到備份結果通知。</sys:String>
     <sys:String x:Key="ConfirmRestartAndRestore">是否確認重啟並恢復配置</sys:String>
     <sys:String x:Key="SelectBackupFile">選擇備份檔案</sys:String>
     <sys:String x:Key="SelectRestoreFile">選擇恢復檔案</sys:String>
@@ -394,6 +394,7 @@
     <sys:String x:Key="CheckConfigOrLog">請檢查配置或查看日誌</sys:String>
     <sys:String x:Key="BackupSuccess">備份成功 [{0}]</sys:String>
     <sys:String x:Key="BackupFailed">備份失敗,請檢查日誌</sys:String>
+    <sys:String x:Key="BackupUploading">正在上傳備份內容，請稍候</sys:String>
     <sys:String x:Key="DownloadSuccess">下載成功</sys:String>
     <sys:String x:Key="DownloadFailed">下載失敗：{0} {1}</sys:String>
     <sys:String x:Key="DownloadException">下載異常：{0}</sys:String>
@@ -405,6 +406,8 @@
     <sys:String x:Key="WebDavAddress">WebDav 地址</sys:String>
     <sys:String x:Key="WebDavUsername">WebDav 使用者名稱</sys:String>
     <sys:String x:Key="WebDavPassword">WebDav 密碼</sys:String>
+    <sys:String x:Key="WebDavBackupNotice">WebDAV 備份說明</sys:String>
+    <sys:String x:Key="WebDavBackupNoticeDescription" xml:space="preserve">WebDAV 備份分為壓縮和上傳兩個階段。壓縮期間請勿手動啟動軟體；軟體自動重啟後將繼續上傳，收到備份結果通知即表示流程結束。&#10;外掛程式較多時壓縮可能需要較長時間。&#10;如果連接 WebDAV 服務的網路狀況不佳，可前往「設定 → 網路 → HTTP 逾時」適當調高逾時時間。</sys:String>
     <sys:String x:Key="Backup">備份</sys:String>
     <sys:String x:Key="CreateBackup">建立備份</sys:String>
     <sys:String x:Key="Restore">恢復</sys:String>

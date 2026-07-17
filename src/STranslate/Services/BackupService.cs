@@ -149,6 +149,10 @@ public class BackupService(Settings Settings,
 
     public async Task PostWebDavBackupAsync(string filePath)
     {
+        var fileName = Path.GetFileName(filePath);
+        notification.Show(i18n.GetTranslation("Prompt"), i18n.GetTranslation("BackupUploading"));
+        logger.LogInformation("Backup|PostWebDavBackupAsync|Uploading File: {FileName}", fileName);
+
         var (isSucess, client, message) = await CreateClientAsync();
         if (!isSucess)
         {
@@ -156,8 +160,6 @@ public class BackupService(Settings Settings,
             logger.LogError($"Backup|CreateClientAsync|Failed Message: {message}");
             return;
         }
-
-        var fileName = Path.GetFileName(filePath);
 
         try
         {
@@ -173,12 +175,20 @@ public class BackupService(Settings Settings,
 
             // 打印通知
             if (response.IsSuccessful && response.StatusCode == 201)
+            {
                 notification.Show(i18n.GetTranslation("Prompt"), string.Format(i18n.GetTranslation("BackupSuccess"), fullPath));
+                logger.LogInformation("Backup|PutFile|Success File: {FileName} Path: {Path}", fileName, fullPath);
+            }
             else
             {
                 notification.Show(i18n.GetTranslation("Prompt"), i18n.GetTranslation("BackupFailed"));
                 logger.LogError($"Backup|PutFile|Error Code: {response.StatusCode} Description: {response.Description}");
             }
+        }
+        catch (Exception ex)
+        {
+            notification.Show(i18n.GetTranslation("Prompt"), i18n.GetTranslation("BackupFailed"));
+            logger.LogError(ex, "Backup|PostWebDavBackupAsync|Failed");
         }
         finally
         {
@@ -287,7 +297,7 @@ public class BackupService(Settings Settings,
 
         var clientParams = new WebDavClientParams
         {
-            Timeout = TimeSpan.FromSeconds(10),
+            Timeout = TimeSpan.FromSeconds(Settings.HttpTimeout),
             BaseAddress = uri,
             Credentials = new NetworkCredential(Settings.Backup.Username, Settings.Backup.Password)
         };

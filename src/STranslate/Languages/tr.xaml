@@ -384,7 +384,7 @@
     <sys:String x:Key="ConfirmDeleteService">'{0}' hizmetini silmek istediğinize emin misiniz?</sys:String>
     <sys:String x:Key="Close">Kapat</sys:String>
     <sys:String x:Key="LogLevel">Günlük Seviyesi</sys:String>
-    <sys:String x:Key="ConfirmRestartAndBackup">Yeniden başlatılıp yedekleme yapılacağını onaylıyor musunuz?</sys:String>
+    <sys:String x:Key="ConfirmRestartAndBackup" xml:space="preserve">Yeniden başlatılıp yapılandırmanın yedeklenmesini onaylıyor musunuz?&#10;Çok sayıda eklenti yüklüyse sıkıştırma uzun sürebilir. Sıkıştırma sırasında uygulamayı el ile başlatmayın. Otomatik yeniden başlatmanın ardından yükleme devam eder; yedekleme sonucu bildirimini alana kadar uygulamayı kapatmayın.</sys:String>
     <sys:String x:Key="ConfirmRestartAndRestore">Yeniden başlatılıp geri yükleme yapılacağını onaylıyor musunuz?</sys:String>
     <sys:String x:Key="SelectBackupFile">Yedekleme Dosyası Seç</sys:String>
     <sys:String x:Key="SelectRestoreFile">Geri Yükleme Dosyası Seç</sys:String>
@@ -393,6 +393,7 @@
     <sys:String x:Key="CheckConfigOrLog">Lütfen yapılandırmayı kontrol edin veya günlükleri görüntüleyin</sys:String>
     <sys:String x:Key="BackupSuccess">Yedekleme başarılı [{0}]</sys:String>
     <sys:String x:Key="BackupFailed">Yedekleme başarısız, lütfen günlükleri kontrol edin</sys:String>
+    <sys:String x:Key="BackupUploading">Yedekleme içeriği yükleniyor. Lütfen bekleyin.</sys:String>
     <sys:String x:Key="DownloadSuccess">İndirme başarılı</sys:String>
     <sys:String x:Key="DownloadFailed">İndirme başarısız: {0} {1}</sys:String>
     <sys:String x:Key="DownloadException">İndirme istisnası: {0}</sys:String>
@@ -404,6 +405,8 @@
     <sys:String x:Key="WebDavAddress">WebDav Adresi</sys:String>
     <sys:String x:Key="WebDavUsername">WebDav Kullanıcı Adı</sys:String>
     <sys:String x:Key="WebDavPassword">WebDav Parolası</sys:String>
+    <sys:String x:Key="WebDavBackupNotice">WebDAV Yedekleme Bilgisi</sys:String>
+    <sys:String x:Key="WebDavBackupNoticeDescription" xml:space="preserve">WebDAV yedeklemesi sıkıştırma ve yükleme olmak üzere iki aşamadan oluşur. Sıkıştırma sırasında uygulamayı el ile başlatmayın. Otomatik yeniden başlatmanın ardından yükleme devam eder ve yedekleme sonucu bildirimi geldiğinde işlem tamamlanır.&#10;Çok sayıda eklenti yüklüyse sıkıştırma uzun sürebilir.&#10;WebDAV hizmetine bağlantı kararsızsa Ayarlar → Ağ → HTTP Zaman Aşımı bölümünden zaman aşımı süresini artırın.</sys:String>
     <sys:String x:Key="Backup">Yedekle</sys:String>
     <sys:String x:Key="CreateBackup">Yedek Oluştur</sys:String>
     <sys:String x:Key="Restore">Geri Yükle</sys:String>
