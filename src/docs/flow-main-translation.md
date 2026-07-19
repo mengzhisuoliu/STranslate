@@ -15,6 +15,12 @@
   - `ExecuteTranslateAsync()`：缓存优先 + 实时翻译编排。
   - `ResolveTranslationLanguageContextAsync()`：解析实际参与翻译的源/目标语种。
   - `HandleCapturedText()`：统一处理取词入口文本的换行与分隔符。
+- `STranslate/Core/TranslationResultCoordinator.cs`
+  - `BeginAutomaticOperation()` / `BeginOperation()`：创建翻译操作并分配递增标识。
+  - 按界面结果对象维护当前有效操作，拒绝旧操作继续发布状态。
+- `STranslate/Core/TranslationOperation.cs`
+  - 保存本次执行的输入、源/目标语种和取消令牌快照。
+  - 使用独立临时结果执行主翻译、回译和词典查询，并把有效更新发布到界面结果。
 - `STranslate/Helpers/LanguageDetector.cs`
   - `GetLanguageAsync()`：源语种判定与目标语种推导。
   - `GetTargetLanguage()`：根据实际源语种推导目标语种。
@@ -29,7 +35,10 @@
    - 若 `Settings.AutoTranslate == false` 直接返回。
    - 空文本时取消防抖任务。
    - 非空时通过 `DebounceExecutor` 按 `Settings.AutoTranslateDelayMs` 延迟执行 `TranslateCommand`。
-2. `TranslateAsync()` 执行前先取消防抖队列，重置已启用服务的结果对象。
+2. `TranslateAsync()` 执行前先取消防抖队列，创建 `TranslationOperation` 并重置已启用服务的结果对象。
+   - `TranslationOperation` 快照输入文本、源/目标语种和取消令牌，内部持有递增操作标识。
+   - 插件只写入本次请求独占的临时结果；主翻译、回译和词典结果仅在当前操作仍有效时发布到界面。
+   - 被后续请求替代的旧任务仍可完成取消和资源清理，但不得覆盖新结果、触发自动复制或写入历史。
 3. 进入 `ExecuteTranslateAsync(checkCacheFirst)`：
    - 获取已启用且 `ExecMode == Automatic` 的服务。
    - 若启用历史缓存：用 `(InputText, SourceLang, TargetLang)` 查询 `SqlService`。
@@ -67,8 +76,8 @@
 ### 从入口到结果：手动单服务执行（词典/翻译）
 1. `TemporaryTranslate(service)` / 输出区重试先走服务级 `CanExecute`：不同服务可并发，同一服务已有手动任务时继续提示等待。
 2. `SingleTranslateAsync(service)` / `SingleTransBackAsync(service)` 启动时快照当前输入文本与源/目标语种，并用 `PluginID + ServiceID` 登记本次任务的取消令牌。
-3. 若是 `IDictionaryPlugin`：用快照文本执行 `ExecuteDictAsync()`，失败即返回；词典手动执行仍保持现有历史语义，不额外落盘。
-4. 若是 `ITranslatePlugin`：用快照文本和语种配置识别实际语种后执行 `ExecuteAsync()`，按配置追加 `ExecuteBackAsync()`。
+3. 若是 `IDictionaryPlugin`：用 `operation.LookupAsync()` 执行快照文本，失败即返回；词典手动执行仍保持现有历史语义，不额外落盘。
+4. 若是 `ITranslatePlugin`：用快照文本和语种配置识别实际语种后执行 `operation.TranslateAsync()`，按配置追加 `operation.BackTranslateAsync()`。
 5. 翻译服务成功后通过串行历史合并重新读取最新历史，只更新当前服务的 `HistoryData`，避免多个手动服务并发完成时互相覆盖。
 6. `Settings.CopyAfterTranslationNotAutomatic` 为真时，手动执行完成立即复制结果；多个并发服务仍按完成顺序更新剪贴板。
 7. ESC / 关闭窗口 / 清空输入 / 新翻译入口会通过 `CancelAllOperations()` 取消所有已登记的手动单服务任务。
@@ -76,6 +85,55 @@
 ### 复制与历史策略
 - 自动复制：`Settings.CopyAfterTranslation` 支持第 N 个自动服务或最后一个自动服务。
 - 历史持久化：`Settings.HistoryLimit > 0` 时使用 SQLite；否则仅使用内存 `_recentTexts` 缓存最近输入。
+
+## 并发隔离维护指南
+
+### 类型职责
+
+| 类型 | 负责 | 不负责 |
+| --- | --- | --- |
+| `MainWindowViewModel` | 创建操作、缓存和语言识别编排、复制与历史业务 | 生成操作标识、创建插件临时结果、处理流式属性转发 |
+| `TranslationResultCoordinator` | 分配操作标识、维护结果通道所有权、拒绝旧操作发布 | 调用翻译插件、决定缓存或历史策略 |
+| `TranslationOperation` | 保存不可变执行快照、调用插件、处理取消/异常、发布有效结果 | 读取实时 `InputText` / `Settings`、写历史或剪贴板 |
+| 翻译/词典插件 | 将执行结果写入调用方提供的结果对象 | 复用或替换主窗口绑定的结果对象 |
+
+`TranslationResultCoordinator` 和 `TranslationOperation` 都是主程序内部类型，不属于插件 SDK；`ITranslatePlugin`、`IDictionaryPlugin` 和结果类型的公共接口保持不变。
+
+### 标准调用方式
+
+自动翻译入口使用 `BeginAutomaticOperation()`，以便复制、历史和识别语言状态也受“最新自动请求”约束：
+
+```csharp
+var operation = _translationCoordinator.BeginAutomaticOperation(
+    InputText,
+    Settings.SourceLang,
+    Settings.TargetLang,
+    cancellationToken);
+
+ResetAllServices(operation);
+var result = await operation.TranslateAsync(plugin, source, target);
+
+if (!result.IsSuccess || !operation.IsCurrent(plugin.TransResult))
+    return;
+```
+
+手动单服务执行使用 `BeginOperation()`。创建后始终向下传递整个 `TranslationOperation`，不要重新拆成 `operationId + text + language + cancellationToken`：
+
+- 主翻译：先 `operation.TryPrepare(plugin)`，再调用 `operation.TranslateAsync()`。
+- 仅回译：先 `operation.TryPrepareBack(plugin)`，再调用 `operation.BackTranslateAsync()`。
+- 词典查询：先 `operation.TryPrepare(dictionaryPlugin)`，再调用 `operation.LookupAsync()`。
+- 缓存结果发布：使用 `operation.TryPublish()`；词典集合使用 `operation.PublishDictionary()`。
+- 语言识别回调：使用 `operation.PublishIdentifiedLanguage()`，避免旧检测任务更新新请求的识别状态。
+
+### 新增或修改翻译入口 Checklist
+
+1. 在读取 `InputText` 和语言设置时立即创建 `TranslationOperation`，后续只使用 `operation.Text`、`SourceLang`、`TargetLang` 和 `CancellationToken`。
+2. 调用插件前准备对应结果通道；不要把插件共享的 `TransResult`、`TransBackResult` 或 `DictionaryResult` 直接作为插件执行结果传入。
+3. 主翻译与回译都使用本次方法返回的临时结果；回译文本从本次主翻译返回值读取。
+4. `TranslationOperation` 会在插件返回后重新检查取消令牌；调用方仍须检查执行结果和 `operation.IsCurrent(...)`，再执行复制、历史、最近文本等非界面副作用。
+5. 自动请求的复制和历史入口还需检查 `operation.IsLatestAutomatic`；可见状态发布使用操作对象提供的发布方法。
+6. 不使用 `AsyncLocal`、静态“当前请求”或实时 `InputText` 隐式传递上下文，避免调用链变得不可追踪。
+7. 增加并发回归测试，至少覆盖旧请求在新请求完成后才进入流式回调、`catch` 或 `finally` 的情况。
 
 ## 错误处理与通知策略
 
@@ -127,6 +185,8 @@
 
 ## 关键文件
 - `STranslate/ViewModels/MainWindowViewModel.cs`
+- `STranslate/Core/TranslationResultCoordinator.cs`
+- `STranslate/Core/TranslationOperation.cs`
 - `STranslate/Helpers/LanguageDetector.cs`
 - `STranslate/Core/SqlService.cs`
 - `STranslate/Core/Utilities.cs`
@@ -134,9 +194,9 @@
 - `STranslate.Plugin/ITranslatePlugin.cs`
 
 ## 常见改动任务
-- 新增翻译结果后处理（如术语替换）：优先在 `ExecuteAsync` 返回后、历史入库前处理。
+- 新增翻译结果后处理（如术语替换）：优先在 `operation.TranslateAsync()` 返回后、历史入库前处理。
 - 调整自动翻译触发体验：修改 `OnInputTextChanged` 与 `Settings.AutoTranslateDelayMs`。
 - 调整输入框显隐体验：修改 `InputClear()`、输入区有效显隐属性和 `MainWindow.xaml` 绑定，避免直接改 `Settings.HideInput` 破坏用户偏好。
-- 修改缓存命中规则：改 `HistoryModel.HasData()` 与 `PopulateResultsFromCacheAsync()`，避免只改 UI 层。
+- 修改缓存命中规则：改 `HistoryModel.HasData()` 与 `PopulateResultsFromCache()`，避免只改 UI 层。
 - 增加复制策略：改 `TranslateAsync()` 内 `CopyAfterTranslation` 分支，并同步枚举定义与设置页。
 - 新增取词入口：为入口分配 `TextSeparatorHandleScope` 并复用 `HandleCapturedText()`，避免各入口文本清洗行为不一致。
