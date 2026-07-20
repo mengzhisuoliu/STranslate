@@ -647,26 +647,23 @@
                                 Grid.Row="1"
                                 Margin="6,2"
                                 Orientation="Horizontal"
-                                Spacing="4">
+                                Spacing="4"
+                                xf:Animations.Primary="{xf:Animate BasedOn={StaticResource ScaleVertically},
+                                                                   Event=Visibility,
+                                                                   Duration=300,
+                                                                   TransformOn=Layout}">
                                 <ikw:SimpleStackPanel.Style>
                                     <Style TargetType="ikw:SimpleStackPanel">
                                         <Style.Triggers>
-                                            <MultiDataTrigger>
-                                                <MultiDataTrigger.Conditions>
-                                                    <Condition Binding="{Binding Plugin.TransResult.IsSuccess}" Value="False" />
-                                                </MultiDataTrigger.Conditions>
-                                                <MultiDataTrigger.Setters>
-                                                    <Setter Property="Visibility" Value="Collapsed" />
-                                                </MultiDataTrigger.Setters>
-                                            </MultiDataTrigger>
-                                            <MultiDataTrigger>
-                                                <MultiDataTrigger.Conditions>
-                                                    <Condition Binding="{Binding Plugin.TransResult.Text}" Value="" />
-                                                </MultiDataTrigger.Conditions>
-                                                <MultiDataTrigger.Setters>
-                                                    <Setter Property="Visibility" Value="Collapsed" />
-                                                </MultiDataTrigger.Setters>
-                                            </MultiDataTrigger>
+                                            <DataTrigger Binding="{Binding Plugin.TransResult.IsSuccess}" Value="False">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Plugin.TransResult.Text}" Value="">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Plugin.TransResult.IsProcessing}" Value="True">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </ikw:SimpleStackPanel.Style>
@@ -770,26 +767,23 @@
                                     Grid.Row="1"
                                     Margin="6,2"
                                     Orientation="Horizontal"
-                                    Spacing="4">
+                                    Spacing="4"
+                                    xf:Animations.Primary="{xf:Animate BasedOn={StaticResource ScaleVertically},
+                                                                       Event=Visibility,
+                                                                       Duration=300,
+                                                                       TransformOn=Layout}">
                                     <ikw:SimpleStackPanel.Style>
                                         <Style TargetType="ikw:SimpleStackPanel">
                                             <Style.Triggers>
-                                                <MultiDataTrigger>
-                                                    <MultiDataTrigger.Conditions>
-                                                        <Condition Binding="{Binding Plugin.TransBackResult.IsSuccess}" Value="False" />
-                                                    </MultiDataTrigger.Conditions>
-                                                    <MultiDataTrigger.Setters>
-                                                        <Setter Property="Visibility" Value="Collapsed" />
-                                                    </MultiDataTrigger.Setters>
-                                                </MultiDataTrigger>
-                                                <MultiDataTrigger>
-                                                    <MultiDataTrigger.Conditions>
-                                                        <Condition Binding="{Binding Plugin.TransBackResult.Text}" Value="" />
-                                                    </MultiDataTrigger.Conditions>
-                                                    <MultiDataTrigger.Setters>
-                                                        <Setter Property="Visibility" Value="Collapsed" />
-                                                    </MultiDataTrigger.Setters>
-                                                </MultiDataTrigger>
+                                                <DataTrigger Binding="{Binding Plugin.TransBackResult.IsSuccess}" Value="False">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Plugin.TransBackResult.Text}" Value="">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Plugin.TransBackResult.IsProcessing}" Value="True">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </ikw:SimpleStackPanel.Style>
